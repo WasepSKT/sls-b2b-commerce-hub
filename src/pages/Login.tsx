@@ -1,144 +1,229 @@
-
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTheme } from "@/lib/store/theme";
+import { cn } from "@/lib/utils";
+import { Moon, Sun, Mail, Lock } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/lib/store/auth";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import LandingNavbar from "@/components/LandingNavbar";
-import LandingFooter from "@/components/LandingFooter";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    if (!email || !password) {
-      toast({
-        title: "Form tidak lengkap",
-        description: "Email dan password diperlukan.",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
-    }
-
-    // Simulate login
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await login(email, password);
+      const { user } = useAuth.getState();
+      
+      if (user) {
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${user.name}!`,
+        });
+        
+        // Get the intended destination from location state, or use role-based default
+        const from = (location.state as any)?.from?.pathname;
+        const roleRoutes: { [key: string]: string } = {
+          admin: "/admin",
+          principal: "/principal",
+          agent: "/agent",
+          customer: "/customer",
+        };
 
-      // Simulate different user redirects based on email prefix
-      if (email.startsWith("principal")) {
-        toast({
-          title: "Login Berhasil",
-          description: "Selamat datang kembali, Principal!",
-        });
-        navigate("/dashboard/principal");
-      } else if (email.startsWith("agent")) {
-        toast({
-          title: "Login Berhasil",
-          description: "Selamat datang kembali, Agen!",
-        });
-        navigate("/dashboard/agent");
-      } else {
-        toast({
-          title: "Login Berhasil",
-          description: "Selamat datang kembali, Pelanggan B2B!",
-        });
-        navigate("/dashboard/customer");
+        // Navigate to the intended destination or role-based default
+        const destination = from || roleRoutes[user.role] || "/";
+        navigate(destination, { replace: true });
       }
     } catch (error) {
       toast({
-        title: "Login Gagal",
-        description: "Email atau password tidak valid.",
+        title: "Login failed",
+        description: "Please check your credentials and try again.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <LandingNavbar />
-      
-      <div className="flex-grow flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
-          <div>
-            <h1 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-              Masuk ke Akun Anda
-            </h1>
-            <p className="mt-2 text-center text-gray-600">
-              Akses sistem SLS-B2B Commerce Hub
-            </p>
+    <div className={cn(
+      "min-h-screen flex flex-col transition-colors duration-300",
+      isDarkMode ? "bg-gray-900" : "bg-gray-50"
+    )}>
+      {/* Navigation */}
+      <nav className={cn(
+        "w-full border-b transition-colors duration-300",
+        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
+      )}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex-shrink-0">
+              <Link to="/" className={cn(
+                "text-2xl font-bold font-poppins transition-colors duration-300",
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>
+                SLS B2B
+              </Link>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className={cn(
+                "transition-colors duration-300",
+                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
           </div>
+        </div>
+      </nav>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Login</CardTitle>
-              <CardDescription>
-                Masukkan kredensial Anda untuk mengakses akun
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="nama@perusahaan.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      Lupa password?
-                    </Link>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Memproses..." : "Masuk"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Belum memiliki akun?{" "}
-              <Link to="/register" className="font-medium text-primary hover:underline">
-                Daftar sekarang
+      {/* Login Form */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className={cn(
+          "w-full max-w-md space-y-8 p-8 rounded-xl shadow-lg transition-colors duration-300",
+          isDarkMode ? "bg-gray-800" : "bg-white"
+        )}>
+          <div>
+            <h2 className={cn(
+              "mt-6 text-3xl font-bold tracking-tight text-center font-poppins",
+              isDarkMode ? "text-white" : "text-gray-900"
+            )}>
+              Welcome back
+            </h2>
+            <p className={cn(
+              "mt-2 text-sm text-center",
+              isDarkMode ? "text-gray-400" : "text-gray-600"
+            )}>
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-blue-500 hover:text-blue-400"
+              >
+                Sign up
               </Link>
             </p>
           </div>
+
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div className="relative">
+                <Mail className={cn(
+                  "absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-300",
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                )} />
+                <Input
+                  type="email"
+                  required
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={cn(
+                    "pl-10 transition-colors duration-300",
+                    isDarkMode 
+                      ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-500"
+                  )}
+                />
+              </div>
+
+              <div className="relative">
+                <Lock className={cn(
+                  "absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-300",
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                )} />
+                <Input
+                  type="password"
+                  required
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={cn(
+                    "pl-10 transition-colors duration-300",
+                    isDarkMode 
+                      ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-500"
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className={cn(
+                    "h-4 w-4 rounded border-gray-300 transition-colors duration-300",
+                    isDarkMode 
+                      ? "bg-gray-700 border-gray-600 text-blue-500"
+                      : "bg-white border-gray-200 text-blue-600"
+                  )}
+                />
+                <label
+                  htmlFor="remember-me"
+                  className={cn(
+                    "ml-2 block text-sm",
+                    isDarkMode ? "text-gray-300" : "text-gray-900"
+                  )}
+                >
+                  Remember me
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-blue-500 hover:text-blue-400"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className={cn(
+                "w-full py-6 text-lg transition-colors duration-300",
+                isDarkMode
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-blue-500 hover:bg-blue-600 text-white"
+              )}
+            >
+              Sign in
+            </Button>
+          </form>
         </div>
       </div>
-      
-      <LandingFooter />
+
+      {/* Footer */}
+      <footer className={cn(
+        "py-8 border-t transition-colors duration-300",
+        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-gray-50 border-gray-200"
+      )}>
+        <div className="text-center">
+          <p className={cn(
+            "text-sm",
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          )}>
+            © {new Date().getFullYear()} SLS B2B Commerce Hub. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

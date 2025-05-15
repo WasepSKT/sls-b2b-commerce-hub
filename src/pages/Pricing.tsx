@@ -1,200 +1,211 @@
-
-import LandingNavbar from "@/components/LandingNavbar";
-import LandingFooter from "@/components/LandingFooter";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTheme } from "@/lib/store/theme";
+import { cn } from "@/lib/utils";
+import MainNav from "@/components/MainNav";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-const plans = [
-  {
-    name: "Starter",
-    price: "499.000",
-    description: "Untuk UMKM yang baru memulai distribusi B2B digital",
-    features: [
-      "Hingga 2 Agen",
-      "Hingga 50 Pelanggan B2B",
-      "Maksimal 100 produk",
-      "Laporan dasar",
-      "Dukungan email",
-      "Penyimpanan 5GB",
-    ],
-    highlighted: false,
-    buttonText: "Mulai Sekarang",
-    buttonVariant: "outline",
-  },
-  {
-    name: "Business",
-    price: "999.000",
-    description: "Untuk UMKM dengan jaringan distribusi yang berkembang",
-    features: [
-      "Hingga 10 Agen",
-      "Hingga 200 Pelanggan B2B",
-      "Produk tidak terbatas",
-      "Laporan lengkap & analitik",
-      "Dukungan prioritas",
-      "Penyimpanan 20GB",
-      "Sistem reward poin",
-      "Notifikasi WhatsApp",
-    ],
-    highlighted: true,
-    buttonText: "Rekomendasi Terbaik",
-    buttonVariant: "default",
-  },
-  {
-    name: "Enterprise",
-    price: "1.999.000",
-    description: "Untuk UMKM dengan operasi distribusi skala besar",
-    features: [
-      "Agen tidak terbatas",
-      "Pelanggan B2B tidak terbatas",
-      "Produk tidak terbatas",
-      "Analitik bisnis lanjutan",
-      "Dukungan 24/7",
-      "Penyimpanan tidak terbatas",
-      "API eksternal",
-      "Setup khusus",
-      "Deployment cloud khusus",
-    ],
-    highlighted: false,
-    buttonText: "Hubungi Kami",
-    buttonVariant: "outline",
-  },
-];
-
 const Pricing = () => {
+  const { isDarkMode } = useTheme();
+
+  const plans = [
+    {
+      name: "Starter",
+      price: "Rp 499.000",
+      description: "Sempurna untuk UMKM yang baru memulai.",
+      features: [
+        "Hingga 100 produk",
+        "5 akun agen",
+        "Manajemen stok dasar",
+        "Laporan penjualan standar",
+        "Dukungan email",
+        "Integrasi WhatsApp",
+      ],
+    },
+    {
+      name: "Business",
+      price: "Rp 999.000",
+      description: "Untuk bisnis yang berkembang.",
+      features: [
+        "Produk tidak terbatas",
+        "25 akun agen",
+        "Manajemen stok lanjutan",
+        "Analitik bisnis lengkap",
+        "Dukungan prioritas",
+        "API akses",
+        "Sistem reward poin",
+        "Multi payment gateway",
+      ],
+      popular: true,
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      description: "Solusi kustom untuk bisnis besar.",
+      features: [
+        "Semua fitur Business",
+        "Akun agen tidak terbatas",
+        "Integrasi sistem kustom",
+        "Account manager dedikasi",
+        "SLA premium",
+        "Training on-site",
+        "Backup data otomatis",
+        "Keamanan tingkat enterprise",
+      ],
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <LandingNavbar />
+    <div className={cn(
+      "min-h-screen transition-colors duration-300",
+      isDarkMode ? "bg-gray-900" : "bg-gray-50"
+    )}>
+      <MainNav />
       
-      <main className="flex-grow">
+      <main className="pt-16">
         {/* Hero Section */}
-        <div className="bg-gradient-to-b from-primary-50 to-white py-12 sm:py-16">
-          <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Pilih Paket Yang Sesuai
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-xl text-gray-600">
-              Kami menyediakan berbagai paket layanan sesuai dengan skala distribusi dan kebutuhan bisnis UMKM Anda
-            </p>
+        <div className="relative isolate overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+            <div className="text-center">
+              <h1 className={cn(
+                "text-4xl font-bold tracking-tight sm:text-6xl mb-6 font-poppins",
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>
+                Pilih Paket yang Sesuai untuk
+                <span className="text-blue-500"> Bisnis Anda</span>
+              </h1>
+              <p className={cn(
+                "text-lg sm:text-xl leading-8 max-w-2xl mx-auto",
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              )}>
+                Kami menawarkan berbagai paket yang dapat disesuaikan dengan kebutuhan dan skala bisnis Anda
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="bg-white py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {plans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={`border ${
-                    plan.highlighted
-                      ? "border-primary shadow-lg scale-105"
-                      : "border-gray-200"
-                  } transition-all`}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <div className="mt-4 flex items-baseline text-gray-900">
-                      <span className="text-4xl font-extrabold tracking-tight">
-                        Rp {plan.price}
-                      </span>
-                      <span className="ml-1 text-xl font-semibold text-gray-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {plans.map((plan) => (
+              <div
+                key={plan.name}
+                className={cn(
+                  "rounded-xl p-8 transition-all duration-300 relative",
+                  isDarkMode 
+                    ? plan.popular 
+                      ? "bg-blue-600 ring-2 ring-blue-500" 
+                      : "bg-gray-800"
+                    : plan.popular
+                      ? "bg-blue-500 ring-2 ring-blue-400"
+                      : "bg-white",
+                )}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className={cn(
+                      "px-4 py-1 rounded-full text-sm font-medium",
+                      isDarkMode 
+                        ? "bg-blue-400 text-blue-950"
+                        : "bg-blue-100 text-blue-600"
+                    )}>
+                      Paling Populer
+                    </span>
+                  </div>
+                )}
+
+                <div className="mb-8">
+                  <h3 className={cn(
+                    "text-2xl font-bold mb-2 font-poppins",
+                    isDarkMode 
+                      ? plan.popular ? "text-white" : "text-white"
+                      : plan.popular ? "text-white" : "text-gray-900"
+                  )}>
+                    {plan.name}
+                  </h3>
+                  <p className={cn(
+                    "text-sm mb-4",
+                    isDarkMode
+                      ? plan.popular ? "text-blue-100" : "text-gray-400"
+                      : plan.popular ? "text-blue-50" : "text-gray-600"
+                  )}>
+                    {plan.description}
+                  </p>
+                  <div className={cn(
+                    "text-3xl font-bold font-poppins",
+                    isDarkMode
+                      ? plan.popular ? "text-white" : "text-white"
+                      : plan.popular ? "text-white" : "text-gray-900"
+                  )}>
+                    {plan.price}
+                    {plan.price !== "Custom" && (
+                      <span className={cn(
+                        "text-base font-normal ml-1",
+                        isDarkMode
+                          ? plan.popular ? "text-blue-100" : "text-gray-400"
+                          : plan.popular ? "text-blue-50" : "text-gray-600"
+                      )}>
                         /bulan
                       </span>
-                    </div>
-                    <CardDescription className="mt-2 text-base">
-                      {plan.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="mt-6 space-y-4">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex">
-                          <Check className="h-5 w-5 flex-shrink-0 text-primary" />
-                          <span className="ml-3 text-gray-700">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-8">
-                      <Link to="/register">
-                        <Button
-                          variant={plan.buttonVariant as "default" | "outline"}
-                          className={`w-full ${
-                            plan.highlighted
-                              ? "bg-primary hover:bg-primary-600"
-                              : ""
-                          }`}
-                        >
-                          {plan.buttonText}
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="bg-gray-50 py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                Pertanyaan Umum
-              </h2>
-              <p className="mt-3 text-xl text-gray-600">
-                Jawaban untuk beberapa pertanyaan yang sering diajukan
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-8 md:grid-cols-2">
-              {[
-                {
-                  question: "Apakah ada masa percobaan gratis?",
-                  answer:
-                    "Ya, kami menyediakan masa percobaan gratis selama 14 hari untuk semua paket tanpa perlu kartu kredit. Anda dapat mencoba semua fitur platform sebelum berlangganan.",
-                },
-                {
-                  question: "Bisakah saya beralih paket kapan saja?",
-                  answer:
-                    "Tentu! Anda dapat beralih antar paket kapan saja. Jika Anda meningkatkan paket, perubahan akan segera diterapkan. Jika Anda menurunkan paket, perubahan akan berlaku pada siklus penagihan berikutnya.",
-                },
-                {
-                  question: "Apakah ada biaya pemasangan awal?",
-                  answer:
-                    "Tidak ada biaya pemasangan untuk paket Starter dan Business. Untuk paket Enterprise, kami menyediakan layanan penyiapan khusus yang mungkin memerlukan biaya tambahan tergantung pada kebutuhan spesifik Anda.",
-                },
-                {
-                  question: "Bagaimana jika saya membutuhkan fitur tambahan?",
-                  answer:
-                    "Untuk kebutuhan khusus yang tidak tercakup dalam paket standar, kami menawarkan layanan kustomisasi. Silakan hubungi tim penjualan kami untuk membahas kebutuhan spesifik bisnis Anda.",
-                },
-                {
-                  question: "Apakah data saya aman?",
-                  answer:
-                    "Keamanan data adalah prioritas utama kami. Kami menerapkan enkripsi end-to-end, SSL/TLS, dan protokol keamanan industri terkini untuk melindungi data Anda. Semua data disimpan dengan aman di pusat data bersertifikat.",
-                },
-                {
-                  question: "Bagaimana dukungan teknis disediakan?",
-                  answer:
-                    "Kami menyediakan dukungan teknis melalui email, live chat, dan sistem tiket. Untuk paket Business dan Enterprise, kami juga menyediakan dukungan telepon. Paket Enterprise mendapatkan akses ke tim dukungan khusus 24/7.",
-                },
-              ].map((faq, index) => (
-                <div key={index} className="border-b border-gray-200 pb-4">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {faq.question}
-                  </h3>
-                  <p className="mt-2 text-gray-700">{faq.answer}</p>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                <ul className="mb-8 space-y-4">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center">
+                      <Check className={cn(
+                        "h-5 w-5 mr-3 flex-shrink-0",
+                        isDarkMode
+                          ? plan.popular ? "text-blue-200" : "text-blue-400"
+                          : plan.popular ? "text-blue-100" : "text-blue-500"
+                      )} />
+                      <span className={cn(
+                        "text-sm",
+                        isDarkMode
+                          ? plan.popular ? "text-blue-100" : "text-gray-300"
+                          : plan.popular ? "text-blue-50" : "text-gray-600"
+                      )}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/register">
+                  <Button className={cn(
+                    "w-full py-6 text-lg transition-colors duration-300",
+                    isDarkMode
+                      ? plan.popular
+                        ? "bg-white text-blue-600 hover:bg-blue-50"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                      : plan.popular
+                        ? "bg-white text-blue-600 hover:bg-blue-50"
+                        : "bg-blue-500 text-white hover:bg-blue-600"
+                  )}>
+                    Mulai Sekarang
+                  </Button>
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </main>
-      
-      <LandingFooter />
+
+      {/* Footer */}
+      <footer className={cn(
+        "border-t py-12 transition-colors duration-300",
+        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
+      )}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className={cn(
+            "text-sm",
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          )}>
+            © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

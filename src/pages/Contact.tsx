@@ -1,295 +1,212 @@
-
-import { useState } from "react";
-import LandingNavbar from "@/components/LandingNavbar";
-import LandingFooter from "@/components/LandingFooter";
+import { useTheme } from "@/lib/store/theme";
+import { cn } from "@/lib/utils";
+import MainNav from "@/components/MainNav";
+import { Phone, Mail, MapPin, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Mail, 
-  MapPin, 
-  MessageSquare, 
-  Phone 
-} from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 
 const Contact = () => {
-  const { toast } = useToast();
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    message: "",
-  });
-  const [loading, setLoading] = useState(false);
+  const { isDarkMode } = useTheme();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormState({
-      ...formState,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (!formState.name || !formState.email || !formState.message) {
-      toast({
-        title: "Form tidak lengkap",
-        description: "Silakan lengkapi semua field yang diperlukan",
-        variant: "destructive",
-      });
-      return;
+  const contactInfo = [
+    {
+      icon: Phone,
+      title: "Telepon",
+      details: "+62 21 1234 5678",
+      description: "Senin - Jumat, 09:00 - 17:00 WIB"
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      details: "support@slsb2b.id",
+      description: "Respon cepat untuk setiap pertanyaan"
+    },
+    {
+      icon: MapPin,
+      title: "Lokasi",
+      details: "Jakarta, Indonesia",
+      description: "Sudirman Central Business District"
+    },
+    {
+      icon: MessageSquare,
+      title: "Live Chat",
+      details: "Chat Langsung",
+      description: "Tersedia 24/7 untuk bantuan"
     }
-    
-    setLoading(true);
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    toast({
-      title: "Pesan Terkirim!",
-      description: "Terima kasih telah menghubungi kami. Tim kami akan segera merespon.",
-    });
-    
-    setFormState({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      message: "",
-    });
-    
-    setLoading(false);
-  };
+  ];
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <LandingNavbar />
+    <div className={cn(
+      "min-h-screen transition-colors duration-300",
+      isDarkMode ? "bg-gray-900" : "bg-gray-50"
+    )}>
+      <MainNav />
       
-      <main className="flex-grow">
+      <main className="pt-16">
         {/* Hero Section */}
-        <div className="bg-gradient-to-b from-primary-50 to-white py-12 sm:py-16">
-          <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Hubungi Kami
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-xl text-gray-600">
-              Kami siap membantu menjawab pertanyaan dan memberikan solusi untuk kebutuhan bisnis Anda
-            </p>
-          </div>
-        </div>
-
-        {/* Contact Form & Info */}
-        <div className="bg-white py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-12 lg:grid-cols-2">
-              {/* Contact Information */}
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Informasi Kontak
-                  </h2>
-                  <p className="mt-2 text-lg text-gray-600">
-                    Jangan ragu untuk menghubungi kami melalui salah satu channel di bawah ini.
-                  </p>
-                </div>
-
-                <div className="mt-8 space-y-6">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary">
-                        <Phone className="h-6 w-6" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Telepon
-                      </h3>
-                      <p className="mt-1 text-gray-600">
-                        +62 21 1234 5678
-                      </p>
-                      <p className="text-gray-600">
-                        Senin - Jumat, 09:00 - 17:00 WIB
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary">
-                        <Mail className="h-6 w-6" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Email
-                      </h3>
-                      <p className="mt-1 text-gray-600">
-                        info@slsb2b.id
-                      </p>
-                      <p className="text-gray-600">
-                        support@slsb2b.id
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary">
-                        <MessageSquare className="h-6 w-6" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Live Chat
-                      </h3>
-                      <p className="mt-1 text-gray-600">
-                        Tersedia di dashboard pelanggan
-                      </p>
-                      <p className="text-gray-600">
-                        24/7 untuk pelanggan Business & Enterprise
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary">
-                        <MapPin className="h-6 w-6" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Kantor
-                      </h3>
-                      <p className="mt-1 text-gray-600">
-                        Jl. Sudirman No. 123
-                      </p>
-                      <p className="text-gray-600">
-                        Jakarta Selatan, 12190
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact Form */}
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Kirim Pesan</CardTitle>
-                    <CardDescription>
-                      Isi formulir di bawah untuk menghubungi tim kami
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Nama Lengkap</Label>
-                          <Input
-                            id="name"
-                            name="name"
-                            value={formState.name}
-                            onChange={handleChange}
-                            placeholder="Nama lengkap Anda"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email</Label>
-                          <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={formState.email}
-                            onChange={handleChange}
-                            placeholder="nama@perusahaan.com"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Nomor Telepon</Label>
-                          <Input
-                            id="phone"
-                            name="phone"
-                            value={formState.phone}
-                            onChange={handleChange}
-                            placeholder="08xxxxxxxxxx"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="company">Perusahaan</Label>
-                          <Input
-                            id="company"
-                            name="company"
-                            value={formState.company}
-                            onChange={handleChange}
-                            placeholder="Nama perusahaan/bisnis Anda"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Pesan</Label>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formState.message}
-                          onChange={handleChange}
-                          placeholder="Silakan jelaskan kebutuhan atau pertanyaan Anda"
-                          rows={5}
-                          required
-                        />
-                      </div>
-
-                      <Button 
-                        type="submit" 
-                        className="w-full"
-                        disabled={loading}
-                      >
-                        {loading ? "Mengirim..." : "Kirim Pesan"}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Map Section */}
-        <div className="bg-gray-50 py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="relative isolate overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Lokasi Kami
-              </h2>
-              <p className="mt-2 text-lg text-gray-600">
-                Kunjungi kantor kami untuk konsultasi langsung
+              <h1 className={cn(
+                "text-4xl font-bold tracking-tight sm:text-6xl mb-6 font-poppins",
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>
+                Hubungi
+                <span className="text-blue-500"> Tim Kami</span>
+              </h1>
+              <p className={cn(
+                "text-lg sm:text-xl leading-8 max-w-2xl mx-auto",
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              )}>
+                Kami siap membantu Anda dengan segala pertanyaan dan kebutuhan bisnis B2B Anda
               </p>
             </div>
+          </div>
+        </div>
 
-            <div className="mt-8 h-96 w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-200">
-              {/* Placeholder for map - in a real app, you would integrate Google Maps or similar */}
-              <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                <p className="text-gray-600">Map akan ditampilkan di sini</p>
-              </div>
+        {/* Contact Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div className={cn(
+              "rounded-xl p-8 transition-colors duration-300",
+              isDarkMode ? "bg-gray-800" : "bg-white"
+            )}>
+              <h2 className={cn(
+                "text-2xl font-bold mb-6 font-poppins",
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>
+                Kirim Pesan
+              </h2>
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={cn(
+                      "block text-sm font-medium mb-2",
+                      isDarkMode ? "text-gray-300" : "text-gray-700"
+                    )}>
+                      Nama
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Nama lengkap"
+                      className={cn(
+                        "w-full",
+                        isDarkMode ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label className={cn(
+                      "block text-sm font-medium mb-2",
+                      isDarkMode ? "text-gray-300" : "text-gray-700"
+                    )}>
+                      Email
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="email@perusahaan.com"
+                      className={cn(
+                        "w-full",
+                        isDarkMode ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"
+                      )}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={cn(
+                    "block text-sm font-medium mb-2",
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  )}>
+                    Subjek
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Subjek pesan"
+                    className={cn(
+                      "w-full",
+                      isDarkMode ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className={cn(
+                    "block text-sm font-medium mb-2",
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  )}>
+                    Pesan
+                  </label>
+                  <Textarea
+                    placeholder="Tulis pesan Anda di sini..."
+                    rows={6}
+                    className={cn(
+                      "w-full",
+                      isDarkMode ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"
+                    )}
+                  />
+                </div>
+                <Button className="w-full py-6 text-lg bg-blue-500 text-white hover:bg-blue-600">
+                  Kirim Pesan
+                </Button>
+              </form>
+            </div>
+
+            {/* Contact Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {contactInfo.map((info, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "rounded-xl p-6 transition-colors duration-300",
+                    isDarkMode ? "bg-gray-800" : "bg-white"
+                  )}
+                >
+                  <div className={cn(
+                    "rounded-lg p-3 w-12 h-12 flex items-center justify-center mb-4",
+                    isDarkMode ? "bg-blue-500/10 text-blue-400" : "bg-blue-500/10 text-blue-500"
+                  )}>
+                    <info.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className={cn(
+                    "text-xl font-semibold mb-2 font-poppins",
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  )}>
+                    {info.title}
+                  </h3>
+                  <p className={cn(
+                    "text-base font-medium mb-1",
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  )}>
+                    {info.details}
+                  </p>
+                  <p className={cn(
+                    "text-sm",
+                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                  )}>
+                    {info.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </main>
-      
-      <LandingFooter />
+
+      {/* Footer */}
+      <footer className={cn(
+        "border-t py-12 transition-colors duration-300",
+        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
+      )}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className={cn(
+            "text-sm",
+            isDarkMode ? "text-gray-400" : "text-gray-500"
+          )}>
+            © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

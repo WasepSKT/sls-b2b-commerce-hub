@@ -5,15 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-const CustomerSettings = () => {
+const AgentSettings = () => {
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Customer Settings</h1>
+      <h1 className="text-3xl font-bold mb-6">Agent Settings</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>Profile Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -21,23 +21,23 @@ const CustomerSettings = () => {
               <Input placeholder="Enter your full name" />
             </div>
             <div>
-              <Label>Customer ID</Label>
-              <Input placeholder="Customer ID" readOnly />
+              <Label>Agent ID</Label>
+              <Input placeholder="Enter agent ID" readOnly />
             </div>
             <div>
               <Label>Profile Picture</Label>
               <Input type="file" accept="image/*" />
             </div>
             <div>
-              <Label>Company Name (Optional)</Label>
-              <Input placeholder="Enter company name" />
+              <Label>Bio</Label>
+              <Textarea placeholder="Enter your bio" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle>Contact Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -49,29 +49,21 @@ const CustomerSettings = () => {
               <Input placeholder="Enter phone number" />
             </div>
             <div>
-              <Label>Billing Address</Label>
-              <Textarea placeholder="Enter billing address" />
+              <Label>WhatsApp Number</Label>
+              <Input placeholder="Enter WhatsApp number" />
             </div>
             <div>
-              <Label>Shipping Address</Label>
-              <Textarea placeholder="Enter shipping address" />
+              <Label>Address</Label>
+              <Textarea placeholder="Enter your address" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Payment Settings</CardTitle>
+            <CardTitle>Commission Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label>Default Payment Method</Label>
-              <select className="w-full mt-1 rounded-md border border-gray-300 p-2">
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="credit_card">Credit Card</option>
-                <option value="ewallet">E-Wallet</option>
-              </select>
-            </div>
             <div>
               <Label>Bank Name</Label>
               <Input placeholder="Enter bank name" />
@@ -84,28 +76,32 @@ const CustomerSettings = () => {
               <Label>Account Holder Name</Label>
               <Input placeholder="Enter account holder name" />
             </div>
+            <div className="flex items-center justify-between">
+              <Label>Receive Commission Updates</Label>
+              <Switch defaultChecked />
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Notification Preferences</CardTitle>
+            <CardTitle>Notification Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Order Status Updates</Label>
+              <Label>New Order Notifications</Label>
               <Switch defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <Label>Promotional Emails</Label>
-              <Switch />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Price Drop Alerts</Label>
+              <Label>Commission Payment Alerts</Label>
               <Switch defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <Label>New Product Notifications</Label>
+              <Label>Product Updates</Label>
+              <Switch defaultChecked />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label>Customer Inquiries</Label>
               <Switch defaultChecked />
             </div>
             <div>
@@ -115,26 +111,6 @@ const CustomerSettings = () => {
                 <option value="sms">SMS</option>
                 <option value="whatsapp">WhatsApp</option>
               </select>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Privacy Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Share Order History with Agent</Label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Allow Product Recommendations</Label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Save Payment Information</Label>
-              <Switch />
             </div>
           </CardContent>
         </Card>
@@ -148,4 +124,4 @@ const CustomerSettings = () => {
   );
 };
 
-export default CustomerSettings;
+export default AgentSettings; 
