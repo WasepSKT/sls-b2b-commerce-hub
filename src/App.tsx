@@ -13,8 +13,14 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import PrincipalDashboard from "./pages/PrincipalDashboard";
+import PrincipalProducts from "./pages/PrincipalProducts";
 import AgentDashboard from "./pages/AgentDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
+import CustomerCatalog from "./pages/CustomerCatalog";
+import CustomerCart from "./pages/CustomerCart";
+import CustomerOrders from "./pages/CustomerOrders";
+import CustomerPayments from "./pages/CustomerPayments";
+import CustomerSettings from "./pages/CustomerSettings";
 
 const queryClient = new QueryClient();
 
@@ -36,12 +42,18 @@ const App = () => (
           
           {/* Principal routes */}
           <Route path="/dashboard/principal" element={<PrincipalDashboard />} />
+          <Route path="/dashboard/principal/products" element={<PrincipalProducts />} />
           
           {/* Agent routes */}
           <Route path="/dashboard/agent" element={<AgentDashboard />} />
           
           {/* Customer routes */}
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+          <Route path="/dashboard/customer/catalog" element={<CustomerCatalog />} />
+          <Route path="/dashboard/customer/cart" element={<CustomerCart />} />
+          <Route path="/dashboard/customer/orders" element={<CustomerOrders />} />
+          <Route path="/dashboard/customer/payments" element={<CustomerPayments />} />
+          <Route path="/dashboard/customer/settings" element={<CustomerSettings />} />
 
           {/* Not Found route */}
           <Route path="*" element={<NotFound />} />
