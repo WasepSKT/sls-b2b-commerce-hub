@@ -7,6 +7,14 @@ import { Menu, X } from "lucide-react";
 const LandingNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navLinks = [
+    { name: "Beranda", path: "/" },
+    { name: "Fitur", path: "/features" },
+    { name: "Harga", path: "/pricing" },
+    { name: "FAQ", path: "/faq" },
+    { name: "Kontak", path: "/contact" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,18 +44,15 @@ const LandingNavbar = () => {
           
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="font-medium text-gray-700 hover:text-primary transition-colors">
-              Beranda
-            </Link>
-            <Link to="/features" className="font-medium text-gray-700 hover:text-primary transition-colors">
-              Fitur
-            </Link>
-            <Link to="/pricing" className="font-medium text-gray-700 hover:text-primary transition-colors">
-              Harga
-            </Link>
-            <Link to="/contact" className="font-medium text-gray-700 hover:text-primary transition-colors">
-              Kontak
-            </Link>
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                to={link.path} 
+                className="font-medium text-gray-700 hover:text-primary transition-colors"
+              >
+                {link.name}
+              </Link>
+            ))}
             <Link to="/login">
               <Button variant="outline" className="mr-2">
                 Masuk
@@ -64,18 +69,16 @@ const LandingNavbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100">
-              Beranda
-            </Link>
-            <Link to="/features" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100">
-              Fitur
-            </Link>
-            <Link to="/pricing" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100">
-              Harga
-            </Link>
-            <Link to="/contact" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100">
-              Kontak
-            </Link>
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                to={link.path} 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
             <div className="pt-4 flex flex-col space-y-2">
               <Link to="/login">
                 <Button variant="outline" className="w-full">
