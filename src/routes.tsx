@@ -18,13 +18,32 @@ import AdminNewsCreate from "@/pages/AdminNewsCreate";
 import AdminWhatsapp from "@/pages/AdminWhatsapp";
 import AdminWhatsappBlastCreate from "@/pages/AdminWhatsappBlastCreate";
 import AdminNotifications from "@/pages/AdminNotifications";
-import PrincipalDashboard from "@/pages/PrincipalDashboard";
-import AgentDashboard from "@/pages/AgentDashboard";
+import PrincipalDashboard from "@/pages/principal/PrincipalDashboard";
+import PrincipalProducts from "@/pages/principal/PrincipalProducts";
+import PrincipalSettings from "@/pages/principal/PrincipalSettings";
+import PrincipalAgents from "@/pages/principal/PrincipalAgents";
+import PrincipalCustomers from "@/pages/principal/PrincipalCustomers";
+import PrincipalOrders from "@/pages/principal/PrincipalOrders";
+import PrincipalReports from "@/pages/principal/PrincipalReports";
+import AgentDashboard from "@/pages/agent/AgentDashboard";
 import CustomerDashboard from "@/pages/CustomerDashboard";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import AdminWhatsappTemplateCreate from "@/pages/AdminWhatsappTemplateCreate";
 import AdminNewsCampaignCreate from "@/pages/AdminNewsCampaignCreate";
+import AgentCatalog from "@/pages/agent/AgentCatalog";
+import AgentCustomers from "@/pages/agent/AgentCustomers";
+import AgentOrders from "@/pages/agent/AgentOrders";
+import AgentCommissions from "@/pages/agent/AgentCommissions";
+import AgentSettings from "@/pages/agent/AgentSettings";
+import AgentProductDetail from "@/pages/agent/AgentProductDetail";
+import AgentProductAdd from "@/pages/agent/AgentProductAdd";
+import AgentSellingProducts from "@/pages/agent/AgentSellingProducts";
+import CustomerCatalog from "@/pages/CustomerCatalog";
+import CustomerCart from "@/pages/CustomerCart";
+import CustomerOrders from "@/pages/CustomerOrders";
+import CustomerPayments from "@/pages/CustomerPayments";
+import CustomerSettings from "@/pages/CustomerSettings";
 
 export const router = createBrowserRouter([
   {
@@ -187,7 +206,7 @@ export const router = createBrowserRouter([
   },
   // Principal Routes
   {
-    path: "/principal",
+    path: "/dashboard/principal",
     element: (
       <PrivateRoute allowedRoles={["principal"]}>
         <PrincipalDashboard />
@@ -195,9 +214,63 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
   },
+  {
+    path: "/dashboard/principal/products",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalProducts />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/principal/agents",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalAgents />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/principal/customers",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalCustomers />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/principal/orders",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalOrders />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/principal/reports",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalReports />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/principal/settings",
+    element: (
+      <PrivateRoute allowedRoles={["principal"]}>
+        <PrincipalSettings />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
   // Agent Routes
   {
-    path: "/agent",
+    path: "/dashboard/agent",
     element: (
       <PrivateRoute allowedRoles={["agent"]}>
         <AgentDashboard />
@@ -205,12 +278,129 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
   },
+  {
+    path: "/dashboard/agent/catalog",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentCatalog />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/selling-products",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentSellingProducts />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/product/add",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentProductAdd />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/product/:productId",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentProductDetail />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/customers",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentCustomers />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/orders",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentOrders />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/commissions",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentCommissions />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/agent/settings",
+    element: (
+      <PrivateRoute allowedRoles={["agent"]}>
+        <AgentSettings />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
   // Customer Routes
   {
-    path: "/customer",
+    path: "/dashboard/customer",
     element: (
       <PrivateRoute allowedRoles={["customer"]}>
         <CustomerDashboard />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/customer/catalog",
+    element: (
+      <PrivateRoute allowedRoles={["customer"]}>
+        <CustomerCatalog />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/customer/cart",
+    element: (
+      <PrivateRoute allowedRoles={["customer"]}>
+        <CustomerCart />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/customer/orders",
+    element: (
+      <PrivateRoute allowedRoles={["customer"]}>
+        <CustomerOrders />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/customer/payments",
+    element: (
+      <PrivateRoute allowedRoles={["customer"]}>
+        <CustomerPayments />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/dashboard/customer/settings",
+    element: (
+      <PrivateRoute allowedRoles={["customer"]}>
+        <CustomerSettings />
       </PrivateRoute>
     ),
     errorElement: <ErrorBoundary />,

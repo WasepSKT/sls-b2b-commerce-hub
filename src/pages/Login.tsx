@@ -34,9 +34,9 @@ const Login = () => {
         const from = (location.state as any)?.from?.pathname;
         const roleRoutes: { [key: string]: string } = {
           admin: "/admin",
-          principal: "/principal",
-          agent: "/agent",
-          customer: "/customer",
+          principal: "/dashboard/principal",
+          agent: "/dashboard/agent",
+          customer: "/dashboard/customer",
         };
 
         // Navigate to the intended destination or role-based default
