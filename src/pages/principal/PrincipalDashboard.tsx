@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardLayout from "@/components/DashboardLayout";
-import { CreditCard, Package, ShoppingBag, Truck, Users, Plus, UserPlus } from "lucide-react";
+import { CreditCard, Package, ShoppingBag, Truck, Users, Plus, UserPlus, Search, RefreshCw, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LineChart } from "@/components/ui/line-chart";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,116 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 type TimePeriod = "daily" | "weekly" | "monthly" | "yearly";
 
 const PrincipalDashboard = () => {
   const { isDarkMode } = useTheme();
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("weekly");
+  const [isAddAgentOpen, setIsAddAgentOpen] = useState(false);
+  const { toast } = useToast();
+  const [agentSearchQuery, setAgentSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    registrationDate: string;
+  }[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [region, setRegion] = useState("");
+
+  // Function to search for registered users
+  const searchRegisteredUsers = () => {
+    if (!agentSearchQuery.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Masukkan nama pengguna untuk mencari",
+      });
+      return;
+    }
+
+    setIsSearching(true);
+    
+    // In a real app, this would call an API to search for users
+    // For demo purposes, we'll simulate an API call with mock data
+    setTimeout(() => {
+      const mockResults = [
+        {
+          id: "user1",
+          name: "Ahmad Fauzi",
+          email: "ahmad.fauzi@example.com",
+          phone: "081234567890",
+          registrationDate: "2024-02-15"
+        },
+        {
+          id: "user2",
+          name: "Budi Santoso",
+          email: "budi.santoso@example.com",
+          phone: "081234567891",
+          registrationDate: "2024-03-10"
+        },
+        {
+          id: "user3",
+          name: "Citra Dewi",
+          email: "citra.dewi@example.com",
+          phone: "081234567892",
+          registrationDate: "2024-04-05"
+        }
+      ].filter(user => 
+        user.name.toLowerCase().includes(agentSearchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(agentSearchQuery.toLowerCase())
+      );
+      
+      setSearchResults(mockResults);
+      setIsSearching(false);
+      
+      if (mockResults.length === 0) {
+        toast({
+          variant: "default",
+          title: "Tidak ada hasil",
+          description: "Tidak ditemukan pengguna dengan nama tersebut",
+        });
+      }
+    }, 800);
+  };
+
+  const linkUserAsAgent = () => {
+    if (!selectedUserId) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Silakan pilih pengguna terlebih dahulu",
+      });
+      return;
+    }
+
+    // In a real app, this would call an API to link the selected user as an agent
+    toast({
+      title: "Agen berhasil ditambahkan",
+      description: "Pengguna telah berhasil ditautkan sebagai agen",
+    });
+    
+    setIsAddAgentOpen(false);
+    setAgentSearchQuery("");
+    setSearchResults([]);
+    setSelectedUserId(null);
+    setRegion("");
+  };
 
   // Sample data for dashboard stats
   const stats = [
@@ -118,6 +222,156 @@ const PrincipalDashboard = () => {
       pageTitle="Dashboard Principal"
     >
       <div className="space-y-6">
+        {/* Add Agent Modal */}
+        <Dialog open={isAddAgentOpen} onOpenChange={setIsAddAgentOpen}>
+          <DialogContent className={cn(
+            "sm:max-w-[500px]",
+            isDarkMode ? "bg-gray-800 border-gray-700 text-gray-100" : ""
+          )}>
+            <DialogHeader>
+              <DialogTitle className={cn(
+                isDarkMode ? "text-gray-100" : ""
+              )}>Tambah Agen Baru</DialogTitle>
+              <DialogDescription className={cn(
+                isDarkMode ? "text-gray-400" : ""
+              )}>
+                Cari pengguna yang sudah terdaftar dan jadikan sebagai agen
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="search" className={cn(isDarkMode ? "text-gray-300" : "")}>
+                  Cari Pengguna
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="search"
+                    placeholder="Masukkan nama atau email pengguna"
+                    value={agentSearchQuery}
+                    onChange={(e) => setAgentSearchQuery(e.target.value)}
+                    className={cn(
+                      "flex-1",
+                      isDarkMode ? "border-gray-600 bg-gray-700 text-gray-200" : ""
+                    )}
+                  />
+                  <Button 
+                    onClick={searchRegisteredUsers}
+                    disabled={isSearching}
+                    className={cn(
+                      "transition-colors duration-300",
+                      isDarkMode 
+                        ? "bg-blue-600 text-white hover:bg-blue-700" 
+                        : ""
+                    )}
+                  >
+                    {isSearching ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Search className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {searchResults.length > 0 && (
+                <div className="border rounded-md overflow-hidden">
+                  <table className="w-full">
+                    <thead className={cn(
+                      "text-xs text-left",
+                      isDarkMode ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-500"
+                    )}>
+                      <tr>
+                        <th className="px-4 py-2">Pilih</th>
+                        <th className="px-4 py-2">Nama</th>
+                        <th className="px-4 py-2">Email</th>
+                        <th className="px-4 py-2">Terdaftar</th>
+                      </tr>
+                    </thead>
+                    <tbody className={cn(
+                      isDarkMode ? "text-gray-200" : "text-gray-700"
+                    )}>
+                      {searchResults.map((user) => (
+                        <tr key={user.id} className={cn(
+                          "border-t cursor-pointer",
+                          isDarkMode ? "border-gray-700 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-50",
+                          selectedUserId === user.id && (isDarkMode ? "bg-gray-700" : "bg-blue-50")
+                        )}
+                        onClick={() => setSelectedUserId(user.id)}
+                        >
+                          <td className="px-4 py-2 text-center">
+                            <div className={cn(
+                              "w-5 h-5 rounded-full flex items-center justify-center border mx-auto",
+                              selectedUserId === user.id
+                                ? isDarkMode ? "border-blue-500 bg-blue-500 text-white" : "border-blue-500 bg-blue-500 text-white"
+                                : isDarkMode ? "border-gray-500" : "border-gray-300"
+                            )}>
+                              {selectedUserId === user.id && <Check className="w-3 h-3" />}
+                            </div>
+                          </td>
+                          <td className="px-4 py-2">{user.name}</td>
+                          <td className="px-4 py-2">{user.email}</td>
+                          <td className="px-4 py-2 text-xs">
+                            {user.registrationDate}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {selectedUserId && (
+                <div className="space-y-2 mt-4">
+                  <Label htmlFor="region" className={cn(isDarkMode ? "text-gray-300" : "")}>
+                    Wilayah Operasi Agen
+                  </Label>
+                  <Input
+                    id="region"
+                    placeholder="Masukkan wilayah operasi agen"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    className={cn(
+                      isDarkMode ? "border-gray-600 bg-gray-700 text-gray-200" : ""
+                    )}
+                  />
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setIsAddAgentOpen(false);
+                  setAgentSearchQuery("");
+                  setSearchResults([]);
+                  setSelectedUserId(null);
+                  setRegion("");
+                }}
+                className={cn(
+                  isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : ""
+                )}
+              >
+                Batal
+              </Button>
+              <Button 
+                onClick={linkUserAsAgent}
+                disabled={!selectedUserId}
+                className={cn(
+                  "transition-colors duration-300",
+                  isDarkMode 
+                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                    : ""
+                )}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Jadikan Agen
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Statistik Utama */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
@@ -305,6 +559,7 @@ const PrincipalDashboard = () => {
                   ? "bg-indigo-600 text-white hover:bg-indigo-500"
                   : "bg-indigo-600 text-white hover:bg-indigo-700"
               )}
+              onClick={() => setIsAddAgentOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
               Tambah Agen

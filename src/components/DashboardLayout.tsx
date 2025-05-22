@@ -1,11 +1,15 @@
 import { ReactNode } from "react";
-import { Bell, Search, User, Moon, Sun } from "lucide-react";
+import { Search, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DashboardSidebar from "./DashboardSidebar";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
+import CustomerNotificationsDropdown from "./CustomerNotificationsDropdown";
+import AgentNotificationsDropdown from "./AgentNotificationsDropdown";
+import PrincipalNotificationsDropdown from "./PrincipalNotificationsDropdown";
+import UserProfileDropdown from "./UserProfileDropdown";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -21,6 +25,20 @@ const DashboardLayout = ({
   className,
 }: DashboardLayoutProps) => {
   const { isDarkMode, toggleTheme } = useTheme();
+
+  // Render the appropriate notification dropdown based on user role
+  const renderNotificationDropdown = () => {
+    switch (role) {
+      case "customer":
+        return <CustomerNotificationsDropdown />;
+      case "agent":
+        return <AgentNotificationsDropdown />;
+      case "principal":
+        return <PrincipalNotificationsDropdown />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={cn(
@@ -62,24 +80,17 @@ const DashboardLayout = ({
               />
             </div>
             
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={cn(
-                "relative",
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </Button>
+            {/* Show role-specific notification dropdown */}
+            {renderNotificationDropdown()}
             
             <Button 
               variant="ghost" 
               size="icon"
               onClick={toggleTheme}
               className={cn(
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                isDarkMode 
+                  ? "text-yellow-300 hover:text-yellow-200 hover:bg-gray-700" 
+                  : "text-gray-600 hover:text-gray-900"
               )}
             >
               {isDarkMode ? (
@@ -89,33 +100,21 @@ const DashboardLayout = ({
               )}
             </Button>
             
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className={cn(
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <User className="h-5 w-5" />
-            </Button>
+            <UserProfileDropdown />
           </div>
           
           <div className="flex md:hidden items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className={cn(
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
+            {/* Mobile view notification dropdown */}
+            {renderNotificationDropdown()}
+            
             <Button 
               variant="ghost" 
               size="icon"
               onClick={toggleTheme}
               className={cn(
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                isDarkMode 
+                  ? "text-yellow-300 hover:text-yellow-200 hover:bg-gray-700" 
+                  : "text-gray-600 hover:text-gray-900"
               )}
             >
               {isDarkMode ? (
@@ -124,15 +123,8 @@ const DashboardLayout = ({
                 <Moon className="h-5 w-5" />
               )}
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className={cn(
-                isDarkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <User className="h-5 w-5" />
-            </Button>
+            
+            <UserProfileDropdown />
           </div>
         </header>
         

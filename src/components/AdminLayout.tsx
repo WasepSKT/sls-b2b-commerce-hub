@@ -25,9 +25,10 @@ import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 
 interface AdminLayoutProps {
   children: ReactNode;
+  pageTitle?: string;
 }
 
-const AdminLayout = ({ children }: AdminLayoutProps) => {
+const AdminLayout = ({ children, pageTitle }: AdminLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,8 +55,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { name: "Notifications", href: "/admin/notifications", icon: Bell },
   ];
 
-  // Get current page title from adminLinks
+  // Get current page title from adminLinks or use the provided pageTitle
   const getCurrentPageTitle = () => {
+    if (pageTitle) return pageTitle;
+    
     const currentPath = location.pathname;
     const currentLink = adminLinks.find(link => 
       currentPath === link.href || currentPath.startsWith(`${link.href}/`)
