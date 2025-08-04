@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";

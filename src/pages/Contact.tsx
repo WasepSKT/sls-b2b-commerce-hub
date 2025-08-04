@@ -1,10 +1,11 @@
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
 import { Phone, Mail, MapPin, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Textarea } from "@/components/ui";
 
 const Contact = () => {
   const { isDarkMode } = useTheme();
@@ -42,7 +43,7 @@ const Contact = () => {
       isDarkMode ? "bg-gray-900" : "bg-gray-50"
     )}>
       <MainNav />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <div className="relative isolate overflow-hidden">
@@ -194,19 +195,7 @@ const Contact = () => {
       </main>
 
       {/* Footer */}
-      <footer className={cn(
-        "border-t py-12 transition-colors duration-300",
-        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
-      )}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className={cn(
-            "text-sm",
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          )}>
-            © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

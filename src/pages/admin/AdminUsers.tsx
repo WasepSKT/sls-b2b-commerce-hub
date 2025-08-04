@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -7,26 +7,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui";
+import { Input } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 import AdminLayout from "@/components/AdminLayout";
-import { users } from "@/lib/data/users";
-import { useToast } from "@/components/ui/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { users, getUserProfileByUserId } from "@/lib/data/users";
+import { useToast } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { Edit, Search, Trash2, UserPlus, Users as UsersIcon } from "lucide-react";
 
 const AdminUsers = () => {
@@ -35,21 +35,21 @@ const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [newUser, setNewUser] = useState({
-    name: "",
+    username: "",
     email: "",
     role: "",
-    companyName: "",
-    phone: "",
+    fullName: "",
+    phoneNumber: "",
   });
 
   // Filter users based on search query and role
   const filteredUsers = users.filter((user) => {
+    const userProfile = getUserProfileByUserId(user.userId);
     const matchesSearch =
       searchQuery === "" ||
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (userProfile?.fullName && userProfile.fullName.toLowerCase().includes(searchQuery.toLowerCase())) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.companyName &&
-        user.companyName.toLowerCase().includes(searchQuery.toLowerCase()));
+      user.username.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
@@ -63,7 +63,7 @@ const AdminUsers = () => {
       description: "New user has been successfully added to the system.",
     });
     setIsAddUserOpen(false);
-    setNewUser({ name: "", email: "", role: "", companyName: "", phone: "" });
+    setNewUser({ username: "", email: "", role: "", fullName: "", phoneNumber: "" });
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -80,8 +80,12 @@ const AdminUsers = () => {
         return "bg-red-100 text-red-800";
       case "principal":
         return "bg-purple-100 text-purple-800";
+      case "distributor":
+        return "bg-orange-100 text-orange-800";
       case "agent":
         return "bg-blue-100 text-blue-800";
+      case "reseller":
+        return "bg-indigo-100 text-indigo-800";
       case "customer":
         return "bg-green-100 text-green-800";
       default:
@@ -112,12 +116,22 @@ const AdminUsers = () => {
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Name</label>
+                  <label className="text-sm font-medium">Username</label>
                   <Input
-                    placeholder="Enter name"
-                    value={newUser.name}
+                    placeholder="Enter username"
+                    value={newUser.username}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, name: e.target.value })
+                      setNewUser({ ...newUser, username: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Full Name</label>
+                  <Input
+                    placeholder="Enter full name"
+                    value={newUser.fullName}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, fullName: e.target.value })
                     }
                   />
                 </div>
@@ -146,28 +160,20 @@ const AdminUsers = () => {
                     <SelectContent>
                       <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="principal">Principal</SelectItem>
+                      <SelectItem value="distributor">Distributor</SelectItem>
                       <SelectItem value="agent">Agent</SelectItem>
+                      <SelectItem value="reseller">Reseller</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Company Name</label>
-                  <Input
-                    placeholder="Enter company name"
-                    value={newUser.companyName}
-                    onChange={(e) =>
-                      setNewUser({ ...newUser, companyName: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone</label>
+                  <label className="text-sm font-medium">Phone Number</label>
                   <Input
                     placeholder="Enter phone number"
-                    value={newUser.phone}
+                    value={newUser.phoneNumber}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, phone: e.target.value })
+                      setNewUser({ ...newUser, phoneNumber: e.target.value })
                     }
                   />
                 </div>
@@ -184,7 +190,7 @@ const AdminUsers = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Search by name, email, or company..."
+              placeholder="Search by name, email, or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -198,7 +204,9 @@ const AdminUsers = () => {
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="principal">Principal</SelectItem>
+              <SelectItem value="distributor">Distributor</SelectItem>
               <SelectItem value="agent">Agent</SelectItem>
+              <SelectItem value="reseller">Reseller</SelectItem>
               <SelectItem value="customer">Customer</SelectItem>
             </SelectContent>
           </Select>
@@ -211,42 +219,51 @@ const AdminUsers = () => {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Company</TableHead>
                 <TableHead>Phone</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge className={getRoleBadgeColor(user.role)}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{user.companyName || "-"}</TableCell>
-                  <TableCell>{user.phone || "-"}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="mr-2 text-blue-600"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-red-600"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredUsers.map((user) => {
+                const userProfile = getUserProfileByUserId(user.userId);
+                return (
+                  <TableRow key={user.userId}>
+                    <TableCell className="font-medium">
+                      {userProfile?.fullName || user.username}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge className={getRoleBadgeColor(user.role)}>
+                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{userProfile?.phoneNumber || "-"}</TableCell>
+                    <TableCell>
+                      <Badge className={user.isVerified ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                        {user.isVerified ? "Verified" : "Pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="mr-2 text-blue-600"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-600"
+                        onClick={() => handleDeleteUser(user.userId)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

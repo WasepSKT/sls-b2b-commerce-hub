@@ -7,7 +7,7 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  signUp: (data: { name: string; email: string; password: string; companyName: string; role: string }) => Promise<void>;
+  signUp: (data: { username: string; email: string; password: string; fullName: string; role: 'admin' | 'principal' | 'distributor' | 'agent' | 'customer' | 'reseller' }) => Promise<void>;
 }
 
 // Initialize state from localStorage if available
@@ -26,9 +26,9 @@ export const useAuth = create<AuthState>((set) => ({
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const user = users.find(u => u.email === email && u.password === password);
-      
+
+      const user = users.find(u => u.email === email && u.passwordHash === password);
+
       if (!user) {
         throw new Error('Invalid email or password');
       }
@@ -52,7 +52,7 @@ export const useAuth = create<AuthState>((set) => ({
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // In a real app, this would be an API call to create the user
       // For now, we'll just simulate success
       set({ isLoading: false });

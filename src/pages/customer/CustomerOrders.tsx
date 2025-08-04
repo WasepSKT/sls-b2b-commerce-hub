@@ -1,22 +1,25 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { Eye, Filter, PackageSearch, ShoppingBag, X, Check, CreditCard, MapPin, Building, Wallet } from "lucide-react";
-import DashboardLayout from "@/components/DashboardLayout";
+import CustomerLayout from "@/components/CustomerLayout";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import FilterModal from "@/components/orders/FilterModal";
 import PaymentModal from "@/components/orders/PaymentModal";
+import { orders, getOrderItemsByOrderId, Order } from "@/lib/data/orders";
+import { useAuth } from "@/lib/store/auth";
 
 const CustomerOrders = () => {
+  const { user } = useAuth();
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
@@ -24,59 +27,17 @@ const CustomerOrders = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("transfer_bank");
   const [selectedAddress, setSelectedAddress] = useState("address1");
   const [loading, setLoading] = useState(false);
-  
-  // Sample order data
-  const orders = [
-    { 
-      id: "ORD-1234", 
-      date: "20 Mei 2025", 
-      status: "Dikirim", 
-      items: 3, 
-      total: "Rp 450,000",
-      tracking: "JNE-12345678"
-    },
-    { 
-      id: "ORD-1233", 
-      date: "18 Mei 2025", 
-      status: "Diproses", 
-      items: 2, 
-      total: "Rp 275,000",
-      tracking: "JNT-87654321"
-    },
-    { 
-      id: "ORD-1232", 
-      date: "15 Mei 2025", 
-      status: "Selesai", 
-      items: 5, 
-      total: "Rp 520,000",
-      tracking: "SiCepat-23456789"
-    },
-    { 
-      id: "ORD-1231", 
-      date: "10 Mei 2025", 
-      status: "Selesai", 
-      items: 1, 
-      total: "Rp 150,000",
-      tracking: "AnterAja-98765432"
-    },
-    { 
-      id: "ORD-1230", 
-      date: "05 Mei 2025", 
-      status: "Selesai", 
-      items: 4, 
-      total: "Rp 380,000",
-      tracking: "JNE-56789012"
-    }
-  ];
+
+  // Get customer orders
+  const customerOrders = orders.filter(order => order.customerId === user?.userId);
 
   // Sample user payment order data
   const pendingOrder = {
-    id: "ORD-1235",
-    date: "22 Mei 2025",
-    status: "Belum Dibayar",
-    items: 2,
-    total: 350000,
-    dueDate: "23 Mei 2025, 23:59"
+    orderId: "ORD-1235",
+    orderDate: "2025-05-22",
+    orderStatus: "pending",
+    totalAmount: 350000,
+    dueDate: "2025-05-23T23:59:00Z"
   };
 
   // Sample user address data
@@ -104,16 +65,9 @@ const CustomerOrders = () => {
     {
       id: "transfer_bank",
       name: "Transfer Bank",
-      description: "BCA - 8941234567",
+      description: "BCA **** 1234",
       icon: Building,
       isDefault: true
-    },
-    {
-      id: "ewallet",
-      name: "E-Wallet",
-      description: "Dana - 08123456789",
-      icon: Wallet,
-      isDefault: false
     },
     {
       id: "credit_card",
@@ -125,16 +79,16 @@ const CustomerOrders = () => {
   ];
 
   const applyFilter = () => {
-    let filtered = [...orders];
-    
+    let filtered = [...customerOrders];
+
     if (statusFilter !== "all") {
-      filtered = filtered.filter(order => order.status === statusFilter);
+      filtered = filtered.filter(order => order.orderStatus === statusFilter);
     }
-    
+
     if (dateFilter) {
-      filtered = filtered.filter(order => order.date.includes(dateFilter));
+      filtered = filtered.filter(order => order.orderDate.includes(dateFilter));
     }
-    
+
     setFilteredOrders(filtered);
     setIsFiltered(statusFilter !== "all" || dateFilter !== "");
     setFilterOpen(false);
@@ -153,17 +107,17 @@ const CustomerOrders = () => {
 
   const processPayment = async () => {
     setLoading(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       setPaymentOpen(false);
       toast({
         title: "Pembayaran berhasil",
         description: "Pesanan Anda akan segera diproses",
       });
-      
+
       // Update order status here in a real application
     } catch (error) {
       toast({
@@ -177,17 +131,70 @@ const CustomerOrders = () => {
   };
 
   // Display filtered orders if filter is applied, otherwise show all orders
-  const displayedOrders = isFiltered ? filteredOrders : orders;
+  const displayedOrders = isFiltered ? filteredOrders : customerOrders;
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Menunggu";
+      case "confirmed":
+        return "Dikonfirmasi";
+      case "processing":
+        return "Diproses";
+      case "shipped":
+        return "Dikirim";
+      case "delivered":
+        return "Selesai";
+      case "cancelled":
+        return "Dibatalkan";
+      default:
+        return status;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+        return "bg-blue-100 text-blue-800";
+      case "processing":
+        return "bg-orange-100 text-orange-800";
+      case "shipped":
+        return "bg-purple-100 text-purple-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusColorDark = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-900/20 text-yellow-300";
+      case "confirmed":
+        return "bg-blue-900/20 text-blue-300";
+      case "processing":
+        return "bg-orange-900/20 text-orange-300";
+      case "shipped":
+        return "bg-purple-900/20 text-purple-300";
+      case "delivered":
+        return "bg-green-900/20 text-green-300";
+      case "cancelled":
+        return "bg-red-900/20 text-red-300";
+      default:
+        return "bg-gray-900/20 text-gray-300";
+    }
+  };
 
   return (
-    <DashboardLayout role="customer" pageTitle="Pesanan">
+    <CustomerLayout pageTitle="Pesanan Saya">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h2 className={cn(
-              "text-2xl font-semibold tracking-tight",
-              isDarkMode ? "text-gray-50" : "text-slate-900"
-            )}>Daftar Pesanan</h2>
             <p className={cn(
               "text-sm",
               isDarkMode ? "text-gray-300" : "text-gray-500"
@@ -196,9 +203,9 @@ const CustomerOrders = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className={cn(
                 isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : "hover:bg-gray-100",
                 isFiltered && "border-blue-500 bg-blue-100/10 text-blue-600"
@@ -219,345 +226,208 @@ const CustomerOrders = () => {
           </div>
         </div>
 
+        {/* Pending Payment Card */}
+        {customerOrders.some(order => order.paymentStatus === 'pending') && (
+          <Card className={cn(
+            "border-orange-200 bg-orange-50",
+            isDarkMode ? "border-orange-800 bg-orange-900/20" : ""
+          )}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className={cn(
+                    "p-2 rounded-full",
+                    isDarkMode ? "bg-orange-800/50" : "bg-orange-100"
+                  )}>
+                    <Wallet className={cn(
+                      "h-5 w-5",
+                      isDarkMode ? "text-orange-300" : "text-orange-600"
+                    )} />
+                  </div>
+                  <div>
+                    <h3 className={cn(
+                      "font-semibold",
+                      isDarkMode ? "text-orange-200" : "text-orange-800"
+                    )}>
+                      Ada pesanan yang belum dibayar
+                    </h3>
+                    <p className={cn(
+                      "text-sm",
+                      isDarkMode ? "text-orange-300" : "text-orange-600"
+                    )}>
+                      {pendingOrder.orderId} • {new Date(pendingOrder.orderDate).toLocaleDateString('id-ID')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <p className={cn(
+                      "text-sm font-medium",
+                      isDarkMode ? "text-orange-200" : "text-orange-800"
+                    )}>
+                      Total Pembayaran
+                    </p>
+                    <p className={cn(
+                      "text-lg font-bold",
+                      isDarkMode ? "text-orange-100" : "text-orange-900"
+                    )}>
+                      Rp {pendingOrder.totalAmount.toLocaleString()}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handlePayNow}
+                    className={cn(
+                      "bg-orange-600 hover:bg-orange-700 text-white",
+                      isDarkMode ? "bg-orange-500 hover:bg-orange-600" : ""
+                    )}
+                  >
+                    Bayar Sekarang
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Orders Table */}
         <Card className={cn(
-          "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
-            : "bg-white border-gray-200"
+          "transition-all duration-300",
+          isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
         )}>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className={cn(
-                "text-lg font-semibold",
-                isDarkMode ? "text-gray-50" : "text-slate-900"
-              )}>Pesanan Terbaru</CardTitle>
-              <CardDescription className={cn(
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              )}>
-                Daftar pesanan Anda {isFiltered && " (difilter)"}
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              {isFiltered && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={resetFilter}
-                  className={cn(
-                    isDarkMode ? "text-gray-300 hover:bg-gray-700" : ""
-                  )}
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Reset Filter
-                </Button>
-              )}
-              <ShoppingBag className={cn(
-                "h-5 w-5 ml-2",
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              )} />
-            </div>
+          <CardHeader>
+            <CardTitle className={cn(isDarkMode ? "text-white" : "text-gray-900")}>
+              Riwayat Pesanan ({displayedOrders.length})
+            </CardTitle>
+            <CardDescription className={cn(isDarkMode ? "text-gray-300" : "text-gray-500")}>
+              Semua pesanan yang telah Anda buat
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className={cn(
-                  isDarkMode ? "border-gray-700" : ""
-                )}>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>No. Pesanan</TableHead>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>Tanggal</TableHead>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>Jumlah Item</TableHead>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>Total</TableHead>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>Status</TableHead>
-                  <TableHead className={cn(
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>No. Resi</TableHead>
-                  <TableHead className={cn(
-                    "text-right",
-                    isDarkMode ? "text-gray-300" : ""
-                  )}>Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedOrders.length > 0 ? (
-                  displayedOrders.map((order) => (
-                    <TableRow key={order.id} className={cn(
-                      isDarkMode 
-                        ? "border-gray-700 hover:bg-transparent" 
-                        : "hover:bg-white"
-                    )}>
-                      <TableCell className={cn(
-                        "font-medium",
-                        isDarkMode ? "text-gray-100" : ""
-                      )}>{order.id}</TableCell>
-                      <TableCell className={cn(
-                        isDarkMode ? "text-gray-300" : ""
-                      )}>{order.date}</TableCell>
-                      <TableCell className={cn(
-                        isDarkMode ? "text-gray-300" : ""
-                      )}>{order.items} produk</TableCell>
-                      <TableCell className={cn(
-                        isDarkMode ? "text-gray-300" : ""
-                      )}>{order.total}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={cn(
-                            "border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                            order.status === "Selesai"
-                              ? isDarkMode 
-                                ? "bg-green-500/20 text-green-400 border-green-500/30" 
-                                : "bg-green-100 text-green-800 border-green-300"
-                              : order.status === "Dikirim"
-                              ? isDarkMode 
-                                ? "bg-blue-500/20 text-blue-400 border-blue-500/30" 
-                                : "bg-blue-100 text-blue-800 border-blue-300"
-                              : isDarkMode 
-                                ? "bg-amber-500/20 text-amber-400 border-amber-500/30" 
-                                : "bg-amber-50 text-amber-800 border-amber-300 font-medium"
-                          )}
-                        >
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className={cn(
-                        isDarkMode ? "text-gray-300" : ""
-                      )}>{order.tracking}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className={cn(
-                          isDarkMode ? "hover:bg-gray-700 text-gray-300" : ""
-                        )}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className={cn(
-                      "text-center py-8",
-                      isDarkMode ? "text-gray-400" : "text-gray-500"
-                    )}>
-                      {isFiltered 
-                        ? "Tidak ada pesanan yang sesuai dengan filter" 
-                        : "Tidak ada pesanan yang tersedia"}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className={cn(
+                    "transition-colors duration-300",
+                    isDarkMode ? "border-gray-700" : "border-gray-200"
+                  )}>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      ID Pesanan
+                    </TableHead>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      Tanggal
+                    </TableHead>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      Status
+                    </TableHead>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      Item
+                    </TableHead>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      Total
+                    </TableHead>
+                    <TableHead className={cn(isDarkMode ? "text-gray-100" : "text-gray-900")}>
+                      Aksi
+                    </TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {displayedOrders.map((order) => {
+                    const orderItems = getOrderItemsByOrderId(order.orderId);
+                    return (
+                      <TableRow key={order.orderId} className={cn(
+                        "transition-colors duration-300",
+                        isDarkMode ? "border-gray-700 hover:bg-gray-750" : "border-gray-200 hover:bg-gray-50"
+                      )}>
+                        <TableCell className={cn("font-medium", isDarkMode ? "text-gray-300" : "text-gray-900")}>
+                          {order.orderId}
+                        </TableCell>
+                        <TableCell className={cn(isDarkMode ? "text-gray-300" : "text-gray-900")}>
+                          {new Date(order.orderDate).toLocaleDateString('id-ID')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={cn(
+                            getStatusColor(order.orderStatus),
+                            isDarkMode ? getStatusColorDark(order.orderStatus) : ""
+                          )}>
+                            {getStatusText(order.orderStatus)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className={cn(isDarkMode ? "text-gray-300" : "text-gray-900")}>
+                          {orderItems.length} item
+                        </TableCell>
+                        <TableCell className={cn(isDarkMode ? "text-blue-400" : "text-blue-600")}>
+                          Rp {order.totalAmount.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={cn("text-blue-600 hover:text-blue-700", isDarkMode ? "text-blue-400 hover:text-blue-300" : "")}
+                            onClick={() => navigate(`/dashboard/customer/order-detail/${order.orderId}`)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {displayedOrders.length === 0 && (
+              <div className="text-center py-12">
+                <ShoppingBag className={cn("mx-auto h-12 w-12", isDarkMode ? "text-gray-400" : "text-gray-300")} />
+                <h3 className={cn("mt-2 text-sm font-medium", isDarkMode ? "text-gray-300" : "text-gray-900")}>
+                  Belum ada pesanan
+                </h3>
+                <p className={cn("mt-1 text-sm", isDarkMode ? "text-gray-400" : "text-gray-500")}>
+                  Mulai berbelanja untuk melihat pesanan Anda di sini.
+                </p>
+                <div className="mt-6">
+                  <Link to="/dashboard/customer/catalog">
+                    <Button className={cn(
+                      "bg-blue-600 hover:bg-blue-700 text-white",
+                      isDarkMode ? "bg-blue-500 hover:bg-blue-600" : ""
+                    )}>
+                      Mulai Belanja
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className={cn(
-            "transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
-              : "bg-white border-gray-200"
-          )}>
-            <CardHeader>
-              <CardTitle className={cn(
-                "text-lg font-semibold",
-                isDarkMode ? "text-gray-50" : "text-slate-900"
-              )}>Status Pengiriman</CardTitle>
-              <CardDescription className={cn(
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              )}>
-                Status pengiriman untuk pesanan terbaru Anda
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className={cn(
-                  "border rounded-md p-4",
-                  isDarkMode ? "border-gray-700" : ""
-                )}>
-                  <div className="flex justify-between mb-2">
-                    <p className={cn(
-                      "font-medium",
-                      isDarkMode ? "text-gray-100" : ""
-                    )}>ORD-1234</p>
-                    <Badge className={cn(
-                      "border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                      isDarkMode 
-                        ? "bg-blue-500/20 text-blue-400 border-blue-500/30" 
-                        : "bg-blue-100 text-blue-800 border-blue-300"
-                    )}>Dikirim</Badge>
-                  </div>
-                  <p className={cn(
-                    "text-sm mb-4",
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  )}>Nomor Resi: JNE-12345678</p>
-                  
-                  <div className="relative">
-                    <div className={cn(
-                      "absolute left-2.5 top-0 h-full w-0.5",
-                      isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                    )}></div>
-                    <div className="space-y-6">
-                      <div className="relative flex gap-3">
-                        <div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center z-10">
-                          <div className="h-2 w-2 rounded-full bg-white"></div>
-                        </div>
-                        <div>
-                          <p className={cn(
-                            "font-medium",
-                            isDarkMode ? "text-gray-100" : ""
-                          )}>Paket dalam pengiriman</p>
-                          <p className={cn(
-                            "text-sm",
-                            isDarkMode ? "text-gray-400" : "text-gray-500"
-                          )}>20 Mei 2025, 10:23</p>
-                        </div>
-                      </div>
-                      <div className="relative flex gap-3">
-                        <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center z-10">
-                          <div className="h-2 w-2 rounded-full bg-white"></div>
-                        </div>
-                        <div>
-                          <p className={cn(
-                            "font-medium",
-                            isDarkMode ? "text-gray-100" : ""
-                          )}>Paket telah diterima di gudang Jakarta</p>
-                          <p className={cn(
-                            "text-sm",
-                            isDarkMode ? "text-gray-400" : "text-gray-500"
-                          )}>19 Mei 2025, 18:45</p>
-                        </div>
-                      </div>
-                      <div className="relative flex gap-3">
-                        <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center z-10">
-                          <div className="h-2 w-2 rounded-full bg-white"></div>
-                        </div>
-                        <div>
-                          <p className={cn(
-                            "font-medium",
-                            isDarkMode ? "text-gray-100" : ""
-                          )}>Pesanan dikonfirmasi</p>
-                          <p className={cn(
-                            "text-sm",
-                            isDarkMode ? "text-gray-400" : "text-gray-500"
-                          )}>19 Mei 2025, 08:30</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Filter Modal */}
+        <FilterModal
+          open={filterOpen}
+          onOpenChange={setFilterOpen}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          dateFilter={dateFilter}
+          setDateFilter={setDateFilter}
+          applyFilter={applyFilter}
+          isDarkMode={isDarkMode}
+        />
 
-          <Card className={cn(
-            "transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
-              : "bg-white border-gray-200"
-          )}>
-            <CardHeader>
-              <CardTitle className={cn(
-                "text-lg font-semibold",
-                isDarkMode ? "text-gray-50" : "text-slate-900"
-              )}>Pesanan Menunggu Pembayaran</CardTitle>
-              <CardDescription className={cn(
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              )}>
-                Pesanan yang belum dibayar
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className={cn(
-                  "border rounded-md p-4",
-                  isDarkMode ? "border-gray-700" : ""
-                )}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <p className={cn(
-                        "font-medium",
-                        isDarkMode ? "text-gray-100" : ""
-                      )}>{pendingOrder.id}</p>
-                      <p className={cn(
-                        "text-sm",
-                        isDarkMode ? "text-gray-400" : "text-gray-500"
-                      )}>{pendingOrder.date}</p>
-                    </div>
-                    <Badge className={cn(
-                      "border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                      isDarkMode 
-                        ? "bg-amber-500/20 text-amber-400 border-amber-500/30" 
-                        : "bg-amber-50 text-amber-800 border-amber-300 font-medium"
-                    )}>Belum Dibayar</Badge>
-                  </div>
-                  <div className="mt-4">
-                    <p className={cn(
-                      "text-sm",
-                      isDarkMode ? "text-gray-300" : ""
-                    )}>Total: <span className={cn(
-                      "font-semibold",
-                      isDarkMode ? "text-white" : ""
-                    )}>Rp {pendingOrder.total.toLocaleString()}</span></p>
-                    <p className={cn(
-                      "text-sm mt-1",
-                      isDarkMode ? "text-gray-300" : ""
-                    )}>Batas pembayaran: <span className="text-red-500 font-semibold">{pendingOrder.dueDate}</span></p>
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button 
-                      className={cn(
-                        "transition-colors duration-300",
-                        isDarkMode 
-                          ? "bg-blue-600 text-white hover:bg-blue-700" 
-                          : ""
-                      )}
-                      onClick={handlePayNow}
-                    >
-                      Bayar Sekarang
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Payment Modal */}
+        <PaymentModal
+          open={paymentOpen}
+          onOpenChange={setPaymentOpen}
+          pendingOrder={pendingOrder}
+          paymentMethods={paymentMethods}
+          selectedPaymentMethod={selectedPaymentMethod}
+          setSelectedPaymentMethod={setSelectedPaymentMethod}
+          userAddresses={userAddresses}
+          selectedAddress={selectedAddress}
+          setSelectedAddress={setSelectedAddress}
+          processPayment={processPayment}
+          loading={loading}
+          isDarkMode={isDarkMode}
+        />
       </div>
-
-      {/* Use FilterModal component */}
-      <FilterModal
-        open={filterOpen}
-        onOpenChange={setFilterOpen}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        dateFilter={dateFilter}
-        setDateFilter={setDateFilter}
-        applyFilter={applyFilter}
-        isDarkMode={isDarkMode}
-      />
-
-      {/* Use PaymentModal component */}
-      <PaymentModal
-        open={paymentOpen}
-        onOpenChange={setPaymentOpen}
-        pendingOrder={pendingOrder}
-        userAddresses={userAddresses}
-        paymentMethods={paymentMethods}
-        selectedAddress={selectedAddress}
-        setSelectedAddress={setSelectedAddress}
-        selectedPaymentMethod={selectedPaymentMethod}
-        setSelectedPaymentMethod={setSelectedPaymentMethod}
-        loading={loading}
-        processPayment={processPayment}
-        isDarkMode={isDarkMode}
-      />
-    </DashboardLayout>
+    </CustomerLayout>
   );
 };
 

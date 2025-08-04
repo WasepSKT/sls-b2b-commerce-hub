@@ -8,14 +8,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui";
+import { Button } from "@/components/ui";
 import { User, LogOut, Settings, CreditCard, ShoppingCart, Package, Store, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/store/auth";
 import { useTheme } from "@/lib/store/theme";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+import { useToast } from "@/components/ui";
 
 export const UserProfileDropdown = ({ className }: { className?: string }) => {
   const { user, logout } = useAuth();
@@ -26,7 +26,7 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   if (!user) return null;
-  
+
   // Get initials for avatar fallback
   const getInitials = (name: string) => {
     return name
@@ -50,11 +50,12 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
     switch (user.role) {
       case "customer":
         return [
-          { name: "My Profile", href: "/dashboard/customer/settings", icon: User },
-          { name: "My Orders", href: "/dashboard/customer/orders", icon: Package },
-          { name: "My Cart", href: "/dashboard/customer/cart", icon: ShoppingCart },
-          { name: "Payment History", href: "/dashboard/customer/payments", icon: CreditCard },
-          { name: "Rewards", href: "/dashboard/customer/rewards", icon: Heart },
+          { name: "Katalog Produk", href: "/dashboard/customer/catalog", icon: Package },
+          { name: "Keranjang Belanja", href: "/dashboard/customer/cart", icon: ShoppingCart },
+          { name: "Pesanan Saya", href: "/dashboard/customer/orders", icon: Package },
+          { name: "Riwayat Pembayaran", href: "/dashboard/customer/payments", icon: CreditCard },
+          { name: "Poin Reward", href: "/dashboard/customer/rewards", icon: Heart },
+          { name: "Pengaturan", href: "/dashboard/customer/settings", icon: User },
         ];
       case "agent":
         return [
@@ -69,6 +70,16 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
           { name: "Products", href: "/dashboard/principal/products", icon: Package },
           { name: "Agents", href: "/dashboard/principal/agents", icon: Store },
           { name: "Customers", href: "/dashboard/principal/customers", icon: User },
+        ];
+      case "distributor":
+        return [
+          { name: "My Profile", href: "/dashboard/distributor/settings", icon: User },
+          { name: "Settings", href: "/dashboard/distributor/settings", icon: Settings },
+        ];
+      case "reseller":
+        return [
+          { name: "My Profile", href: "/dashboard/reseller/settings", icon: User },
+          { name: "Settings", href: "/dashboard/reseller/settings", icon: Settings },
         ];
       default:
         return [
@@ -87,8 +98,8 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
           className={cn(
             "relative rounded-full transition-all duration-200",
             isHovered || isOpen
-              ? isDarkMode 
-                ? "bg-gray-700 text-white shadow-md scale-105" 
+              ? isDarkMode
+                ? "bg-gray-700 text-white shadow-md scale-105"
                 : "bg-gray-100 text-gray-900 shadow-md scale-105"
               : "bg-transparent hover:bg-transparent",
             isDarkMode ? "text-gray-300" : "text-gray-600",
@@ -100,20 +111,20 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
           <Avatar className={cn(
             "h-8 w-8 transition-all duration-200",
             isHovered || isOpen ? "ring-2 ring-opacity-50" : "",
-            isDarkMode 
-              ? "ring-blue-400" 
+            isDarkMode
+              ? "ring-blue-400"
               : "ring-blue-500"
           )}>
-            <AvatarImage 
-              src={user.avatar || ""} 
-              alt={user.name} 
+            <AvatarImage
+              src=""
+              alt={user.username}
               className="object-cover"
             />
             <AvatarFallback className={cn(
               "transition-colors duration-200",
               isDarkMode ? "bg-gray-700 text-gray-100" : "bg-gray-200 text-gray-700"
             )}>
-              {getInitials(user.name)}
+              {getInitials(user.username)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -135,7 +146,7 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
               "text-sm font-medium leading-none",
               isDarkMode ? "text-gray-100" : "text-gray-900"
             )}>
-              {user.name}
+              {user.username}
             </p>
             <p className={cn(
               "text-xs leading-none",
@@ -143,14 +154,7 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
             )}>
               {user.email}
             </p>
-            {user.companyName && (
-              <p className={cn(
-                "text-xs leading-none",
-                isDarkMode ? "text-gray-400" : "text-gray-500" 
-              )}>
-                {user.companyName}
-              </p>
-            )}
+
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className={isDarkMode ? "bg-gray-700" : ""} />
@@ -172,12 +176,12 @@ export const UserProfileDropdown = ({ className }: { className?: string }) => {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator className={isDarkMode ? "bg-gray-700" : ""} />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleLogout}
           className={cn(
             "cursor-pointer transition-colors duration-150",
-            isDarkMode 
-              ? "hover:bg-red-900/20 text-gray-300 hover:text-red-300" 
+            isDarkMode
+              ? "hover:bg-red-900/20 text-gray-300 hover:text-red-300"
               : "hover:bg-red-50 hover:text-red-600"
           )}
         >

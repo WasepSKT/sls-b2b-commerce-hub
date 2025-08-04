@@ -45,14 +45,14 @@ export const useOrders = create<OrdersState>((set, get) => ({
   },
 
   getOrderById: (id) => {
-    return get().orders.find((order) => order.id === id);
+    return get().orders.find((order) => order.orderId === id);
   },
 
   updateOrderStatus: (orderId, status) => {
     set((state) => ({
       orders: state.orders.map((order) =>
-        order.id === orderId
-          ? { ...order, status, updatedAt: new Date().toISOString() }
+        order.orderId === orderId
+          ? { ...order, orderStatus: status, updatedAt: new Date().toISOString() }
           : order
       ),
     }));
@@ -61,7 +61,7 @@ export const useOrders = create<OrdersState>((set, get) => ({
   updatePaymentStatus: (orderId, paymentStatus) => {
     set((state) => ({
       orders: state.orders.map((order) =>
-        order.id === orderId
+        order.orderId === orderId
           ? { ...order, paymentStatus, updatedAt: new Date().toISOString() }
           : order
       ),

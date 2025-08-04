@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";

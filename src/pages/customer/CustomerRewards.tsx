@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { Award, Gift, Search, Filter, ChevronRight, CheckCircle2, Lock } from "lucide-react";
-import DashboardLayout from "@/components/DashboardLayout";
+import CustomerLayout from "@/components/CustomerLayout";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -34,7 +34,7 @@ const CustomerRewards = () => {
 
   // Sample reward categories
   const categories = ["all", "vouchers", "products", "services", "experiences"];
-  
+
   // Sample rewards data
   const rewardsData = [
     {
@@ -96,7 +96,7 @@ const CustomerRewards = () => {
   // Filter rewards based on search and category
   const filteredRewards = rewardsData.filter((reward) => {
     const matchesSearch = reward.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         reward.description.toLowerCase().includes(searchQuery.toLowerCase());
+      reward.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || reward.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -119,17 +119,11 @@ const CustomerRewards = () => {
   };
 
   return (
-    <DashboardLayout role="customer" pageTitle="Katalog Hadiah">
+    <CustomerLayout pageTitle="Poin Reward">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
           <div>
-            <h2 className={cn(
-              "text-2xl font-semibold tracking-tight",
-              isDarkMode ? "text-gray-50" : "text-slate-900"
-            )}>
-              Katalog Hadiah
-            </h2>
             <p className={cn(
               "text-sm",
               isDarkMode ? "text-gray-300" : "text-gray-500"
@@ -137,12 +131,12 @@ const CustomerRewards = () => {
               Tukarkan poin Anda dengan berbagai hadiah menarik
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Card className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
                 : "bg-white border-gray-200"
             )}>
               <CardContent className="p-4 flex items-center">
@@ -170,12 +164,12 @@ const CustomerRewards = () => {
             </Badge>
           </div>
         </div>
-        
+
         {/* Search and Filter */}
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
             : "bg-white border-gray-200"
         )}>
           <CardContent className="p-6">
@@ -189,7 +183,7 @@ const CustomerRewards = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={cn(
                     "pl-10 transition-colors duration-300",
-                    isDarkMode 
+                    isDarkMode
                       ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                       : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-500"
                   )}
@@ -216,7 +210,7 @@ const CustomerRewards = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Tabs: Rewards and History */}
         <Tabs defaultValue="rewards" className="w-full">
           <TabsList className={cn(
@@ -226,7 +220,7 @@ const CustomerRewards = () => {
             <TabsTrigger value="rewards">Katalog Hadiah</TabsTrigger>
             <TabsTrigger value="history">Riwayat Poin</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="rewards" className="space-y-6">
             {/* Featured Rewards */}
             {rewardsData.filter(reward => reward.featured).length > 0 && (
@@ -241,15 +235,15 @@ const CustomerRewards = () => {
                   {rewardsData.filter(reward => reward.featured).map((reward) => (
                     <Card key={reward.id} className={cn(
                       "overflow-hidden transition-all duration-300",
-                      isDarkMode 
-                        ? "bg-gray-800 border-gray-700 hover:border-blue-500" 
+                      isDarkMode
+                        ? "bg-gray-800 border-gray-700 hover:border-blue-500"
                         : "bg-white border-gray-200 hover:border-primary"
                     )}>
                       <div className="grid md:grid-cols-2">
                         <div className="aspect-square md:aspect-auto">
-                          <img 
-                            src={reward.image} 
-                            alt={reward.name} 
+                          <img
+                            src={reward.image}
+                            alt={reward.name}
                             className="h-full w-full object-cover"
                           />
                         </div>
@@ -306,7 +300,7 @@ const CustomerRewards = () => {
                 </div>
               </div>
             )}
-            
+
             {/* All Rewards */}
             <div className="space-y-4">
               <h3 className={cn(
@@ -320,14 +314,14 @@ const CustomerRewards = () => {
                   {filteredRewards.map((reward) => (
                     <Card key={reward.id} className={cn(
                       "overflow-hidden transition-all duration-300",
-                      isDarkMode 
-                        ? "bg-gray-800 border-gray-700 hover:border-blue-500" 
+                      isDarkMode
+                        ? "bg-gray-800 border-gray-700 hover:border-blue-500"
                         : "bg-white border-gray-200 hover:border-primary"
                     )}>
                       <div className="aspect-video">
-                        <img 
-                          src={reward.image} 
-                          alt={reward.name} 
+                        <img
+                          src={reward.image}
+                          alt={reward.name}
                           className="h-full w-full object-cover"
                         />
                       </div>
@@ -348,7 +342,7 @@ const CustomerRewards = () => {
                             isDarkMode ? "text-gray-300" : "text-gray-600"
                           )}>{reward.description}</p>
                         </div>
-                        
+
                         <div className="pt-2 border-t flex justify-between items-center">
                           <p className={cn(
                             "font-bold",
@@ -387,11 +381,11 @@ const CustomerRewards = () => {
               )}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="history">
             <Card className={cn(
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
                 : "bg-white border-gray-200"
             )}>
               <CardHeader>
@@ -435,8 +429,8 @@ const CustomerRewards = () => {
                       {userRewards.history.map((item) => (
                         <tr key={item.id} className={cn(
                           "border-b last:border-0",
-                          isDarkMode 
-                            ? "border-gray-700 hover:bg-gray-750" 
+                          isDarkMode
+                            ? "border-gray-700 hover:bg-gray-750"
                             : "border-gray-200 hover:bg-gray-50"
                         )}>
                           <td className={cn(
@@ -475,7 +469,7 @@ const CustomerRewards = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>
+    </CustomerLayout>
   );
 };
 

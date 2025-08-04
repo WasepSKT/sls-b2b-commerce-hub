@@ -16,11 +16,11 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { useAuth } from "@/lib/store/auth";
 import { useTheme } from "@/lib/store/theme";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 
 interface AdminLayoutProps {

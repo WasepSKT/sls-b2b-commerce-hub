@@ -1,6 +1,6 @@
 import AdminLayout from "@/components/AdminLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -8,9 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+} from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Progress } from "@/components/ui";
 import {
   Database,
   Download,
@@ -19,7 +19,7 @@ import {
   HardDrive,
   Activity,
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui";
 
 const AdminDatabase = () => {
   const { toast } = useToast();

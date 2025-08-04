@@ -1,18 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Textarea } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui";
+import { Switch } from "@/components/ui";
+import { Label } from "@/components/ui";
 import AdminLayout from "@/components/AdminLayout";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui";
 
 const AdminSettings = () => {
   const { toast } = useToast();

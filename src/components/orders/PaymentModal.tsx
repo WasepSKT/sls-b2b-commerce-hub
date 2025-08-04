@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { RadioGroup, RadioGroupItem } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { Separator } from "@/components/ui/separator";
 import { CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 
 interface Address {
   id: string;
@@ -33,11 +33,10 @@ interface PaymentMethod {
 }
 
 interface PendingOrder {
-  id: string;
-  date: string;
-  status: string;
-  items: number;
-  total: number;
+  orderId: string;
+  orderDate: string;
+  orderStatus: string;
+  totalAmount: number;
   dueDate: string;
 }
 
@@ -83,7 +82,7 @@ const PaymentModal = ({
           <DialogDescription className={cn(
             isDarkMode ? "text-gray-400" : ""
           )}>
-            Selesaikan pembayaran untuk pesanan {pendingOrder.id}
+            Selesaikan pembayaran untuk pesanan {pendingOrder.orderId}
           </DialogDescription>
         </DialogHeader>
 
@@ -101,12 +100,12 @@ const PaymentModal = ({
                 <p className={cn(
                   "text-sm mt-1",
                   isDarkMode ? "text-gray-400" : "text-gray-500"
-                )}>{pendingOrder.id} • {pendingOrder.date}</p>
+                )}>{pendingOrder.orderId} • {new Date(pendingOrder.orderDate).toLocaleDateString('id-ID')}</p>
               </div>
               <Badge className={cn(
                 "border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                isDarkMode 
-                  ? "bg-amber-500/20 text-amber-400 border-amber-500/30" 
+                isDarkMode
+                  ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
                   : "bg-amber-50 text-amber-800 border-amber-300 font-medium"
               )}>Belum Dibayar</Badge>
             </div>
@@ -118,7 +117,7 @@ const PaymentModal = ({
               <p className={cn(
                 "text-xl font-bold mt-1",
                 isDarkMode ? "text-white" : ""
-              )}>Rp {pendingOrder.total.toLocaleString()}</p>
+              )}>Rp {pendingOrder.totalAmount.toLocaleString()}</p>
             </div>
           </div>
 
@@ -127,18 +126,18 @@ const PaymentModal = ({
               "font-medium",
               isDarkMode ? "text-gray-100" : "text-gray-900"
             )}>Alamat Pengiriman</h4>
-            
+
             <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress} className="space-y-3">
               {userAddresses.map(address => (
                 <div key={address.id} className={cn(
                   "flex items-start space-x-3 p-3 border rounded-lg cursor-pointer",
-                  selectedAddress === address.id 
-                    ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50" 
+                  selectedAddress === address.id
+                    ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50"
                     : isDarkMode ? "border-gray-700" : "border-gray-200",
                   "transition-all duration-200"
                 )}>
-                  <RadioGroupItem 
-                    value={address.id} 
+                  <RadioGroupItem
+                    value={address.id}
                     id={address.id}
                     className={cn(
                       isDarkMode ? "border-gray-600 text-blue-500" : ""
@@ -146,8 +145,8 @@ const PaymentModal = ({
                   />
                   <div className="grid gap-1.5 leading-none w-full">
                     <div className="flex justify-between">
-                      <Label 
-                        htmlFor={address.id} 
+                      <Label
+                        htmlFor={address.id}
                         className={cn(
                           "font-medium text-base cursor-pointer",
                           isDarkMode ? "text-gray-100" : ""
@@ -195,18 +194,18 @@ const PaymentModal = ({
               "font-medium",
               isDarkMode ? "text-gray-100" : "text-gray-900"
             )}>Metode Pembayaran</h4>
-            
+
             <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} className="space-y-3">
               {paymentMethods.map(method => (
                 <div key={method.id} className={cn(
                   "flex items-start space-x-3 p-3 border rounded-lg cursor-pointer",
-                  selectedPaymentMethod === method.id 
-                    ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50" 
+                  selectedPaymentMethod === method.id
+                    ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50"
                     : isDarkMode ? "border-gray-700" : "border-gray-200",
                   "transition-all duration-200"
                 )}>
-                  <RadioGroupItem 
-                    value={method.id} 
+                  <RadioGroupItem
+                    value={method.id}
                     id={method.id}
                     className={cn(
                       isDarkMode ? "border-gray-600 text-blue-500" : ""
@@ -224,8 +223,8 @@ const PaymentModal = ({
                             isDarkMode ? "text-gray-300" : "text-gray-600"
                           )} />
                         </div>
-                        <Label 
-                          htmlFor={method.id} 
+                        <Label
+                          htmlFor={method.id}
                           className={cn(
                             "font-medium cursor-pointer",
                             isDarkMode ? "text-gray-100" : ""
@@ -256,8 +255,8 @@ const PaymentModal = ({
 
         <DialogFooter className="flex sm:justify-between">
           <DialogClose asChild>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className={cn(
                 isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : ""
               )}
@@ -265,13 +264,13 @@ const PaymentModal = ({
               Batal
             </Button>
           </DialogClose>
-          <Button 
+          <Button
             onClick={processPayment}
             disabled={loading}
             className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-blue-600 text-white hover:bg-blue-700" 
+              isDarkMode
+                ? "bg-blue-600 text-white hover:bg-blue-700"
                 : ""
             )}
           >
@@ -288,7 +287,7 @@ const PaymentModal = ({
             ) : (
               <>
                 <CreditCard className="mr-2 h-4 w-4" />
-                Bayar Sekarang (Rp {pendingOrder.total.toLocaleString()})
+                Bayar Sekarang (Rp {pendingOrder.totalAmount.toLocaleString()})
               </>
             )}
           </Button>

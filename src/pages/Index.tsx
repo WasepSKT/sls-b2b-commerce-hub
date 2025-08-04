@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import { ShoppingBag, Users, BarChart, Shield, ArrowRight } from "lucide-react";
 import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => {
   const { isDarkMode } = useTheme();
@@ -36,6 +38,7 @@ const Index = () => {
       "min-h-screen transition-colors duration-300",
       isDarkMode ? "bg-gray-900" : "bg-white"
     )}>
+      <ScrollToTop />
       <MainNav />
 
       {/* Hero Section */}
@@ -166,127 +169,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className={cn(
-        "border-t py-12 transition-colors duration-300",
-        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
-      )}>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <h3 className={cn(
-                "text-lg font-semibold font-poppins",
-                isDarkMode ? "text-white" : "text-gray-900"
-              )}>
-                Tentang
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/about" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Perusahaan
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/careers" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Karir
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h3 className={cn(
-                "text-lg font-semibold font-poppins",
-                isDarkMode ? "text-white" : "text-gray-900"
-              )}>
-                Produk
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/features" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Fitur
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/pricing" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Harga
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h3 className={cn(
-                "text-lg font-semibold font-poppins",
-                isDarkMode ? "text-white" : "text-gray-900"
-              )}>
-                Dukungan
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/help" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Pusat Bantuan
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Kontak
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h3 className={cn(
-                "text-lg font-semibold font-poppins",
-                isDarkMode ? "text-white" : "text-gray-900"
-              )}>
-                Legal
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/privacy" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Privasi
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/terms" className={cn(
-                    "text-sm transition-colors duration-300",
-                    isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  )}>
-                    Syarat & Ketentuan
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 border-t pt-8 text-center">
-            <p className={cn(
-              "text-sm",
-              isDarkMode ? "text-gray-400" : "text-gray-500"
-            )}>
-              © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

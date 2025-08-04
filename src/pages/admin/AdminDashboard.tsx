@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import AdminLayout from "@/components/AdminLayout";
 import {
   Users,
@@ -21,6 +21,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/lib/store/auth";
+import { getUserProfileByUserId } from "@/lib/data/users";
 import {
   LineChart,
   Line,
@@ -36,13 +37,19 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { useTheme } from "@/lib/store/theme";
+import { cn } from "@/lib/utils";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { isDarkMode } = useTheme();
+
+  // Get user profile data
+  const userProfile = user ? getUserProfileByUserId(user.userId) : null;
 
   // Sample statistics data
   const stats = [
@@ -268,7 +275,7 @@ const AdminDashboard = () => {
         {/* Welcome Message */}
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold">
-            Welcome back, {user?.name || "Admin"}
+            Welcome back, {userProfile?.fullName || user?.username || "Admin"}
           </h2>
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <Activity className="h-4 w-4" />
@@ -290,11 +297,10 @@ const AdminDashboard = () => {
                       {stat.value}
                     </h3>
                     <p
-                      className={`text-xs ${
-                        stat.trend === "up"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
+                      className={`text-xs ${stat.trend === "up"
+                        ? "text-green-500"
+                        : "text-red-500"
+                        }`}
                     >
                       {stat.trend === "up" ? (
                         <ArrowUp className="inline h-3 w-3" />
@@ -318,19 +324,41 @@ const AdminDashboard = () => {
         {/* Main Content Grid */}
         <div className="grid gap-6 md:grid-cols-2">
           {/* Revenue Trend */}
-          <Card>
+          <Card className={cn(
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
             <CardHeader>
-              <CardTitle>Revenue Trend</CardTitle>
+              <CardTitle className={cn(
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>Revenue Trend</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={revenueData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isDarkMode ? "#374151" : "#e5e7eb"}
+                    />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fill: isDarkMode ? "#d1d5db" : "#374151" }}
+                    />
+                    <YAxis
+                      tick={{ fill: isDarkMode ? "#d1d5db" : "#374151" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: isDarkMode ? "#1f2937" : "#ffffff",
+                        border: isDarkMode ? "1px solid #374151" : "1px solid #e5e7eb",
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="revenue"
@@ -344,9 +372,13 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Order Status Distribution */}
-          <Card>
+          <Card className={cn(
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
             <CardHeader>
-              <CardTitle>Order Status Distribution</CardTitle>
+              <CardTitle className={cn(
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>Order Status Distribution</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
@@ -365,8 +397,18 @@ const AdminDashboard = () => {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: isDarkMode ? "#1f2937" : "#ffffff",
+                        border: isDarkMode ? "1px solid #374151" : "1px solid #e5e7eb",
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -374,19 +416,41 @@ const AdminDashboard = () => {
           </Card>
 
           {/* User Acquisition */}
-          <Card>
+          <Card className={cn(
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
             <CardHeader>
-              <CardTitle>User Acquisition</CardTitle>
+              <CardTitle className={cn(
+                isDarkMode ? "text-white" : "text-gray-900"
+              )}>User Acquisition</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={userAcquisitionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="channel" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isDarkMode ? "#374151" : "#e5e7eb"}
+                    />
+                    <XAxis
+                      dataKey="channel"
+                      tick={{ fill: isDarkMode ? "#d1d5db" : "#374151" }}
+                    />
+                    <YAxis
+                      tick={{ fill: isDarkMode ? "#d1d5db" : "#374151" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: isDarkMode ? "#1f2937" : "#ffffff",
+                        border: isDarkMode ? "1px solid #374151" : "1px solid #e5e7eb",
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{
+                        color: isDarkMode ? "#f9fafb" : "#111827"
+                      }}
+                    />
                     <Bar dataKey="users" fill="#8B5CF6" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -477,13 +541,12 @@ const AdminDashboard = () => {
                       className="flex items-start space-x-4 border-b pb-4 last:border-0"
                     >
                       <div
-                        className={`rounded-full p-2 ${
-                          notification.type === "critical"
-                            ? "bg-red-100 text-red-800"
-                            : notification.type === "warning"
+                        className={`rounded-full p-2 ${notification.type === "critical"
+                          ? "bg-red-100 text-red-800"
+                          : notification.type === "warning"
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-blue-100 text-blue-800"
-                        }`}
+                          }`}
                       >
                         <AlertCircle className="h-4 w-4" />
                       </div>
@@ -561,11 +624,10 @@ const AdminDashboard = () => {
                         className="h-10 w-10 rounded-full"
                       />
                       <span
-                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
-                          user.status === "online"
-                            ? "bg-green-500"
-                            : "bg-yellow-500"
-                        }`}
+                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${user.status === "online"
+                          ? "bg-green-500"
+                          : "bg-yellow-500"
+                          }`}
                       />
                     </div>
                     <div className="flex-1">

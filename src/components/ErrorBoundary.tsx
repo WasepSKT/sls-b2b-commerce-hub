@@ -1,7 +1,7 @@
 import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { AlertCircle } from "lucide-react";
 
 export function ErrorBoundary() {

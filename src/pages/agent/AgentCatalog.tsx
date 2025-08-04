@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui";
 import { 
   Search, 
   Package, 
@@ -19,20 +19,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  stock: number;
-  commission: string;
-  description: string;
-  rating: number;
-  sales: number;
-  image: string;
-  tags: string[];
-}
+import { agentProducts as allProducts, Product } from "@/lib/data/products";
 
 const AgentCatalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,50 +41,6 @@ const AgentCatalog = () => {
   // Alternatif placeholder dari sumber lain jika placeholder.com tidak tersedia
   const fallbackPlaceholder = "https://placehold.co/400x300/gray/white?text=Product+Image";
 
-  // Dummy data for products
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Produk Premium A",
-      category: "Electronics",
-      price: "Rp 1.500.000",
-      stock: 25,
-      commission: "10%",
-      description: "Produk berkualitas tinggi dengan fitur terbaik di kelasnya",
-      rating: 4.8,
-      sales: 120,
-      image: "https://via.placeholder.com/200",
-      tags: ["Bestseller", "Premium"]
-    },
-    {
-      id: 2,
-      name: "Produk Unggulan B",
-      category: "Fashion",
-      price: "Rp 750.000",
-      stock: 40,
-      commission: "15%",
-      description: "Desain modern dengan kualitas terbaik",
-      rating: 4.5,
-      sales: 85,
-      image: "https://via.placeholder.com/200",
-      tags: ["New", "Trending"]
-    },
-    {
-      id: 3,
-      name: "Produk Spesial C",
-      category: "Electronics",
-      price: "Rp 2.500.000",
-      stock: 15,
-      commission: "12%",
-      description: "Teknologi terbaru dengan performa maksimal",
-      rating: 4.9,
-      sales: 95,
-      image: "https://via.placeholder.com/200",
-      tags: ["Limited", "Premium"]
-    },
-    // Add more products as needed
-  ];
-
   const categories = ["all", "Electronics", "Fashion", "Home", "Beauty"];
   const sortOptions = [
     { value: "popularity", label: "Popularitas" },
@@ -106,9 +49,9 @@ const AgentCatalog = () => {
     { value: "commission", label: "Komisi Tertinggi" }
   ];
 
-  const filteredProducts = products.filter((product) =>
+  const filteredProducts = allProducts.filter((product) =>
     (selectedCategory === "all" || product.category === selectedCategory) &&
-    (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (product.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
      product.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
@@ -132,7 +75,7 @@ const AgentCatalog = () => {
   };
 
   // View product detail function
-  const handleViewProductDetail = (productId: number) => {
+  const handleViewProductDetail = (productId: string) => {
     navigate(`/dashboard/agent/product/${productId}`);
   };
 
@@ -226,7 +169,7 @@ const AgentCatalog = () => {
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className={cn(
+            <Card key={product.product_id} className={cn(
               "overflow-hidden transition-all duration-300 group",
               isDarkMode 
                 ? "bg-gray-800 border-gray-700 hover:border-gray-600" 
@@ -234,18 +177,18 @@ const AgentCatalog = () => {
             )}>
               <div className="relative aspect-[4/3]">
                 <img
-                  src={product.image || getPlaceholderImage()}
-                  alt={product.name}
+                  src={product.image_urls[0] || getPlaceholderImage()}
+                  alt={product.product_name}
                   className={cn(
                     "object-cover w-full h-full transition-opacity duration-200",
-                    !product.image && "hover:opacity-75"
+                    !product.image_urls[0] && "hover:opacity-75"
                   )}
                   onError={(e) => {
                     // Fallback ke placeholder alternatif jika placeholder.com tidak tersedia
                     e.currentTarget.src = fallbackPlaceholder;
                   }}
                 />
-                {!product.image && (
+                {!product.image_urls[0] && (
                   <div className={cn(
                     "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b",
                     isDarkMode 
@@ -264,23 +207,6 @@ const AgentCatalog = () => {
                     </p>
                   </div>
                 )}
-                <div className="absolute top-2 right-2 flex gap-2">
-                  {product.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className={cn(
-                        "px-2.5 py-1 text-xs rounded-full font-medium shadow-sm",
-                        tag === "Premium" 
-                          ? "bg-yellow-500/90 text-white"
-                          : tag === "New"
-                          ? "bg-green-500/90 text-white"
-                          : "bg-blue-500/90 text-white"
-                      )}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
               </div>
               <CardContent className="p-6">
                 <div className="space-y-4">
@@ -288,7 +214,7 @@ const AgentCatalog = () => {
                     <h3 className={cn(
                       "font-semibold text-lg mb-1 group-hover:text-blue-600 transition-colors line-clamp-1",
                       isDarkMode ? "text-white" : "text-gray-900"
-                    )}>{product.name}</h3>
+                    )}>{product.product_name}</h3>
                     <p className={cn(
                       "text-sm line-clamp-2",
                       isDarkMode ? "text-gray-300" : "text-gray-600"
@@ -297,11 +223,11 @@ const AgentCatalog = () => {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
-                      {renderRatingStars(product.rating)}
+                      {renderRatingStars(4.5)}
                       <span className={cn(
                         "text-sm ml-1",
                         isDarkMode ? "text-gray-400" : "text-gray-600"
-                      )}>({product.sales})</span>
+                      )}>(120)</span>
                     </div>
                     <span className={cn(
                       "text-sm px-2 py-1 rounded-full bg-opacity-10",
@@ -319,13 +245,13 @@ const AgentCatalog = () => {
                       <p className={cn(
                         "text-lg font-bold",
                         isDarkMode ? "text-white" : "text-gray-900"
-                      )}>{product.price}</p>
+                      )}>{`Rp ${product.base_price.toLocaleString()}`}</p>
                       <p className={cn(
                         "text-sm flex items-center",
                         isDarkMode ? "text-green-400" : "text-green-600"
                       )}>
                         <Percent className="h-3.5 w-3.5 mr-1" />
-                        Komisi {product.commission}
+                        Komisi 10%
                       </p>
                     </div>
                     <div className="text-right">
@@ -336,7 +262,7 @@ const AgentCatalog = () => {
                       <p className={cn(
                         "font-medium",
                         isDarkMode ? "text-white" : "text-gray-900"
-                      )}>{product.stock}</p>
+                      )}>{product.is_active ? 'Tersedia' : 'Habis'}</p>
                     </div>
                   </div>
 
@@ -353,7 +279,7 @@ const AgentCatalog = () => {
                     </Button>
                     <Button 
                       variant="outline" 
-                      onClick={() => handleViewProductDetail(product.id)}
+                      onClick={() => handleViewProductDetail(product.product_id)}
                       className={cn(
                         "flex-1 transition-all duration-200",
                         isDarkMode 
@@ -375,4 +301,4 @@ const AgentCatalog = () => {
   );
 };
 
-export default AgentCatalog; 
+export default AgentCatalog;

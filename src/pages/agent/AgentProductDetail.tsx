@@ -1,242 +1,362 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowLeft,
-  ShoppingCart,
-  Package,
-  Tag,
-  Percent,
-  Star,
-  Share2
-} from "lucide-react";
-import DashboardLayout from "@/components/DashboardLayout";
-import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
+import { cn } from "@/lib/utils";
+import { useProductDetail } from "@/hooks/useProductDetail";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+
+// Import modular components
+import ProductImageGallery from "@/components/product-detail/ProductImageGallery";
+import ProductInfo from "@/components/product-detail/ProductInfo";
+import ProductActions from "@/components/product-detail/ProductActions";
+import ProductTabs from "@/components/product-detail/ProductTabs";
+import SimilarProducts from "@/components/product-detail/SimilarProducts";
+import ProductDetailSkeleton from "@/components/product-detail/ProductDetailSkeleton";
+import ProductNotFound from "@/components/product-detail/ProductNotFound";
 
 const AgentProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
-  // Dummy data untuk contoh
-  const product = {
-    id: productId,
-    name: "Produk Premium A",
-    description: "Produk berkualitas tinggi dengan fitur terbaik di kelasnya. Dilengkapi dengan berbagai keunggulan dan teknologi terkini untuk memenuhi kebutuhan pelanggan.",
-    price: "Rp 1.500.000",
-    stock: 25,
-    commission: "10%",
-    rating: 4.8,
-    sales: 120,
-    category: "Electronics",
-    image: "",
-    tags: ["Premium", "Bestseller"],
-    specifications: [
-      { label: "Merek", value: "Brand X" },
-      { label: "Model", value: "X-2024" },
-      { label: "Garansi", value: "1 Tahun" },
-      { label: "Kondisi", value: "Baru" }
-    ]
+  // Use custom hook for product data (agent role)
+  const {
+    product,
+    inventory,
+    reviews,
+    averageRating,
+    reviewCount,
+    similarProducts,
+    loading,
+    error
+  } = useProductDetail(productId);
+
+  // Loading state
+  if (loading) {
+    return <ProductDetailSkeleton />;
+  }
+
+  // Error state
+  if (error || !product) {
+    return <ProductNotFound onBack={() => navigate('/dashboard/agent/catalog')} />;
+  }
+
+  // Calculate agent-specific pricing and targets
+  const agentPrice = product.basePrice;
+  const customerPrice = Math.round(product.basePrice * 1.25); // 25% markup
+  const profitPerUnit = customerPrice - agentPrice;
+  const commission = Math.round((profitPerUnit / customerPrice) * 100);
+
+  // Mock sales data for agent
+  const monthlyTarget = 50;
+  const currentSales = 32;
+  const salesProgress = (currentSales / monthlyTarget) * 100;
+
+  // Agent-specific event handlers
+  const handleAddToCart = () => {
+    // Agent-specific cart logic
+    console.log('Adding to agent cart:', product.productId);
+    // TODO: Implement agent cart functionality
   };
 
-  const renderRatingStars = (rating: number) => {
-    return [...Array(5)].map((_, index) => (
-      <Star
-        key={index}
-        className={cn(
-          "h-4 w-4",
-          index < Math.floor(rating)
-            ? "text-yellow-400 fill-yellow-400"
-            : "text-gray-300"
-        )}
-      />
-    ));
+  const handleBuyNow = () => {
+    // Agent-specific checkout logic
+    console.log('Agent buying now:', product.productId);
+    navigate('/dashboard/agent/checkout', {
+      state: { productId: product.productId }
+    });
+  };
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/dashboard/agent/product/${product.productId}`;
+    navigator.clipboard.writeText(shareUrl);
+    console.log('Agent product link copied to clipboard:', shareUrl);
+  };
+
+  const handleWishlist = () => {
+    setIsWishlisted(!isWishlisted);
+    // TODO: Implement agent wishlist functionality
+    console.log('Agent wishlist toggled:', product.productId);
+  };
+
+  const handleWriteReview = () => {
+    // Agent-specific review logic
+    navigate('/dashboard/agent/review', {
+      state: { productId: product.productId }
+    });
+  };
+
+  const handleViewAll = () => {
+    navigate('/dashboard/agent/catalog');
+  };
+
+  const handleProductClick = (productId: string) => {
+    navigate(`/dashboard/agent/product/${productId}`);
+  };
+
+  const handleViewSalesReport = () => {
+    navigate('/dashboard/agent/sales-report', {
+      state: { productId: product.productId }
+    });
   };
 
   return (
-    <DashboardLayout role="agent" pageTitle="Detail Produk">
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate(-1)}
-            className={cn(
-              "transition-colors duration-200",
-              isDarkMode
-                ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                : "border-gray-200 hover:bg-gray-100"
-            )}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Kembali
-          </Button>
-          <div className="flex-1">
-            <h2 className={cn(
-              "text-2xl font-semibold tracking-tight",
-              isDarkMode ? "text-gray-50" : "text-slate-900"
-            )}>Detail Produk</h2>
-            <p className={cn(
-              "text-sm",
-              isDarkMode ? "text-gray-300" : "text-gray-500"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Product Images */}
+        <ProductImageGallery
+          imageUrls={product.imageUrls || []}
+          productName={product.productName}
+        />
+
+        {/* Product Info and Actions */}
+        <div className="space-y-8">
+          <ProductInfo
+            product={product}
+            averageRating={averageRating}
+            reviewCount={reviewCount}
+            inventory={inventory}
+          />
+
+          {/* Agent-specific pricing info */}
+          <div className={cn(
+            "p-6 rounded-xl border",
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
+            <h3 className={cn(
+              "text-lg font-semibold mb-4",
+              isDarkMode ? "text-white" : "text-gray-900"
             )}>
-              Informasi lengkap tentang produk
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className={cn(
-              "transition-colors duration-200",
-              isDarkMode
-                ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                : "border-gray-200 hover:bg-gray-100"
-            )}
-          >
-            <Share2 className="h-4 w-4 mr-2" />
-            Bagikan
-          </Button>
-        </div>
-
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-          <Card className={cn(
-            "overflow-hidden",
-            isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200"
-          )}>
-            <div className="aspect-[4/3] relative">
-              <img
-                src={product.image || "https://placehold.co/800x600/gray/white?text=Product+Image"}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-4 right-4 flex gap-2">
-                {product.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className={cn(
-                      "px-2.5 py-1 text-xs rounded-full font-medium shadow-sm",
-                      tag === "Premium"
-                        ? "bg-yellow-500/90 text-white"
-                        : "bg-blue-500/90 text-white"
-                    )}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </Card>
-
-          <Card className={cn(
-            isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200"
-          )}>
-            <CardContent className="p-6 space-y-6">
-              <div>
-                <h1 className={cn(
-                  "text-2xl font-bold mb-2",
-                  isDarkMode ? "text-white" : "text-gray-900"
-                )}>{product.name}</h1>
-                <p className={cn(
+              Informasi Harga Agent
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className={cn(
                   "text-sm",
                   isDarkMode ? "text-gray-300" : "text-gray-600"
-                )}>{product.description}</p>
-              </div>
-
-              <div className="flex items-center justify-between py-4 border-y border-dashed">
-                <div>
-                  <p className={cn(
-                    "text-2xl font-bold",
-                    isDarkMode ? "text-white" : "text-gray-900"
-                  )}>{product.price}</p>
-                  <p className={cn(
-                    "text-sm flex items-center text-green-500",
-                  )}>
-                    <Percent className="h-4 w-4 mr-1" />
-                    Komisi {product.commission}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className={cn(
-                    "text-sm",
-                    isDarkMode ? "text-gray-300" : "text-gray-600"
-                  )}>Stok Tersedia</p>
-                  <p className={cn(
-                    "text-lg font-semibold",
-                    isDarkMode ? "text-white" : "text-gray-900"
-                  )}>{product.stock} unit</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {renderRatingStars(product.rating)}
-                    <span className={cn(
-                      "ml-2 text-sm",
-                      isDarkMode ? "text-gray-300" : "text-gray-600"
-                    )}>{product.rating}</span>
-                  </div>
-                  <span className={cn(
-                    "text-sm px-2 py-1 rounded-full",
-                    isDarkMode ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-600"
-                  )}>
-                    {product.sales} terjual
-                  </span>
-                  <span className={cn(
-                    "text-sm px-2 py-1 rounded-full",
-                    isDarkMode ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-600"
-                  )}>
-                    <Tag className="h-3.5 w-3.5 inline mr-1" />
-                    {product.category}
-                  </span>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className={cn(
-                    "font-semibold",
-                    isDarkMode ? "text-white" : "text-gray-900"
-                  )}>Spesifikasi</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {product.specifications.map((spec, index) => (
-                      <div key={index} className="space-y-1">
-                        <p className={cn(
-                          "text-sm",
-                          isDarkMode ? "text-gray-400" : "text-gray-500"
-                        )}>{spec.label}</p>
-                        <p className={cn(
-                          "text-sm font-medium",
-                          isDarkMode ? "text-white" : "text-gray-900"
-                        )}>{spec.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <Button className="flex-1 bg-blue-600 text-white hover:bg-blue-700">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Jual Sekarang
-                </Button>
-                <Button variant="outline" className={cn(
-                  "flex-1",
-                  isDarkMode
-                    ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                    : "border-gray-200 hover:bg-gray-100"
                 )}>
-                  <Package className="h-4 w-4 mr-2" />
-                  Tambah ke Katalog
+                  Harga Beli (Agent):
+                </span>
+                <span className="text-lg font-bold text-green-600">
+                  Rp {agentPrice.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className={cn(
+                  "text-sm",
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                )}>
+                  Harga Jual (Customer):
+                </span>
+                <span className="text-lg font-bold text-blue-600">
+                  Rp {customerPrice.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className={cn(
+                  "text-sm",
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                )}>
+                  Profit per Unit:
+                </span>
+                <span className="text-lg font-bold text-green-600">
+                  Rp {profitPerUnit.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className={cn(
+                  "text-sm",
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                )}>
+                  Komisi:
+                </span>
+                <Badge variant="secondary" className="text-green-600">
+                  {commission}%
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <ProductActions
+            product={product}
+            inventory={inventory}
+            onAddToCart={handleAddToCart}
+            onBuyNow={handleBuyNow}
+          />
+
+          {/* Agent-specific features */}
+          <div className={cn(
+            "p-6 rounded-xl border",
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
+            <h3 className={cn(
+              "text-lg font-semibold mb-4",
+              isDarkMode ? "text-white" : "text-gray-900"
+            )}>
+              Fitur Khusus Agent
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+              <div className="flex items-center">
+                <div className="w-5 h-5 mr-3 text-blue-500">💰</div>
+                <div>
+                  <div className={cn(
+                    "font-medium",
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  )}>
+                    Komisi {commission}%
+                  </div>
+                  <div className={cn(
+                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                  )}>
+                    Per penjualan
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <div className="w-5 h-5 mr-3 text-green-500">📊</div>
+                <div>
+                  <div className={cn(
+                    "font-medium",
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  )}>
+                    Sales Target
+                  </div>
+                  <div className={cn(
+                    isDarkMode ? "text-gray-400" : "text-gray-600"
+                  )}>
+                    Tracking real-time
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sales Progress Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className={cn(
+                  "font-medium",
+                  isDarkMode ? "text-white" : "text-gray-900"
+                )}>
+                  Target Penjualan Bulanan
+                </h4>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleViewSalesReport}
+                >
+                  Lihat Laporan
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className={cn(
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  )}>
+                    Progress: {currentSales} / {monthlyTarget} unit
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    salesProgress >= 80 ? "text-green-600" :
+                      salesProgress >= 60 ? "text-yellow-600" : "text-red-600"
+                  )}>
+                    {salesProgress.toFixed(1)}%
+                  </span>
+                </div>
+                <Progress value={salesProgress} className="h-2" />
+                <div className="flex justify-between text-xs">
+                  <span className={cn(
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  )}>
+                    Sisa: {monthlyTarget - currentSales} unit
+                  </span>
+                  <span className={cn(
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  )}>
+                    Bonus: {salesProgress >= 100 ? "Rp 500.000" : "Rp 0"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Agent Performance Stats */}
+          <div className={cn(
+            "p-6 rounded-xl border",
+            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          )}>
+            <h3 className={cn(
+              "text-lg font-semibold mb-4",
+              isDarkMode ? "text-white" : "text-gray-900"
+            )}>
+              Performa Agent
+            </h3>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className={cn(
+                  "text-2xl font-bold text-blue-600",
+                  isDarkMode ? "text-blue-400" : "text-blue-600"
+                )}>
+                  {currentSales}
+                </div>
+                <div className={cn(
+                  "text-xs",
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                )}>
+                  Terjual Bulan Ini
+                </div>
+              </div>
+              <div>
+                <div className={cn(
+                  "text-2xl font-bold text-green-600",
+                  isDarkMode ? "text-green-400" : "text-green-600"
+                )}>
+                  Rp {(currentSales * profitPerUnit).toLocaleString()}
+                </div>
+                <div className={cn(
+                  "text-xs",
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                )}>
+                  Total Komisi
+                </div>
+              </div>
+              <div>
+                <div className={cn(
+                  "text-2xl font-bold text-purple-600",
+                  isDarkMode ? "text-purple-400" : "text-purple-600"
+                )}>
+                  {salesProgress >= 100 ? "A+" : salesProgress >= 80 ? "A" : salesProgress >= 60 ? "B" : "C"}
+                </div>
+                <div className={cn(
+                  "text-xs",
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                )}>
+                  Grade
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </DashboardLayout>
+
+      {/* Product Tabs */}
+      <ProductTabs
+        product={product}
+        reviews={reviews}
+        averageRating={averageRating}
+        reviewCount={reviewCount}
+        onWriteReview={handleWriteReview}
+      />
+
+      {/* Similar Products */}
+      <SimilarProducts
+        similarProducts={similarProducts}
+        onViewAll={handleViewAll}
+        onProductClick={handleProductClick}
+      />
+    </div>
   );
 };
 

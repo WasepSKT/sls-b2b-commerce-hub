@@ -18,10 +18,7 @@ export const PrivateRoute = ({ children, allowedRoles = [] }: PrivateRouteProps)
       try {
         const parsedUser = JSON.parse(storedUser);
         if (parsedUser && parsedUser.role) {
-          // Reload only if the stored user has the required role
-          if (allowedRoles.length === 0 || allowedRoles.includes(parsedUser.role)) {
-            window.location.reload();
-          }
+          // No reload needed, useAuth already initializes from localStorage
         }
       } catch (e) {
         localStorage.removeItem('user');
@@ -38,14 +35,15 @@ export const PrivateRoute = ({ children, allowedRoles = [] }: PrivateRouteProps)
     // Redirect to appropriate dashboard based on user's role
     const roleRoutes: { [key: string]: string } = {
       admin: "/admin",
-      principal: "/principal",
-      agent: "/agent",
-      customer: "/customer",
+      principal: "/dashboard/principal",
+      agent: "/dashboard/agent",
+      customer: "/dashboard/customer",
+      reseller: "/dashboard/reseller",
     };
-    
+
     // Get the base route for the current role
     const baseRoute = roleRoutes[user.role] || "/";
-    
+
     // Only redirect if we're not already on a path for the user's role
     if (!location.pathname.startsWith(baseRoute)) {
       return <Navigate to={baseRoute} replace />;

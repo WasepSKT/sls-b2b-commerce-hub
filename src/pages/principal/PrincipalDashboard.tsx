@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
 import DashboardLayout from "@/components/DashboardLayout";
 import { CreditCard, Package, ShoppingBag, Truck, Users, Plus, UserPlus, Search, RefreshCw, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LineChart } from "@/components/ui/line-chart";
-import { Button } from "@/components/ui/button";
+import { LineChart } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { useTheme } from "@/lib/store/theme";
 import {
   Select,
@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +21,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 
 type TimePeriod = "daily" | "weekly" | "monthly" | "yearly";

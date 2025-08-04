@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { products, type Product } from '../data/products';
+import { customerProducts, type Product } from '../data/products';
 
 interface ProductsState {
   products: Product[];
@@ -9,18 +9,18 @@ interface ProductsState {
   selectedCategory: string;
   priceRange: [number, number];
   sortBy: string;
-  
+
   setSearchTerm: (term: string) => void;
   setSelectedCategory: (category: string) => void;
   setPriceRange: (range: [number, number]) => void;
   setSortBy: (sort: string) => void;
-  
+
   getFilteredProducts: () => Product[];
   getProductById: (id: string) => Product | undefined;
 }
 
 export const useProducts = create<ProductsState>((set, get) => ({
-  products: products,
+  products: customerProducts,
   isLoading: false,
   error: null,
   searchTerm: "",
@@ -37,13 +37,13 @@ export const useProducts = create<ProductsState>((set, get) => ({
     const { products, searchTerm, selectedCategory, priceRange, sortBy } = get();
 
     let filtered = products.filter((product) => {
-      const matchesSearch = product.name
+      const matchesSearch = product.productName
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
         selectedCategory === "all" || product.category === selectedCategory;
       const matchesPrice =
-        product.price >= priceRange[0] && product.price <= priceRange[1];
+        product.basePrice >= priceRange[0] && product.basePrice <= priceRange[1];
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
@@ -51,11 +51,11 @@ export const useProducts = create<ProductsState>((set, get) => ({
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case "price-low":
-          return a.price - b.price;
+          return a.basePrice - b.basePrice;
         case "price-high":
-          return b.price - a.price;
+          return b.basePrice - a.basePrice;
         case "name":
-          return a.name.localeCompare(b.name);
+          return a.productName.localeCompare(b.productName);
         default: // "newest"
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
@@ -65,6 +65,6 @@ export const useProducts = create<ProductsState>((set, get) => ({
   },
 
   getProductById: (id) => {
-    return get().products.find((product) => product.id === id);
+    return get().products.find((product) => product.productId === id);
   },
 })); 

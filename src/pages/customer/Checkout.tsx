@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
+import { Textarea } from "@/components/ui";
+import { useToast } from "@/components/ui";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 
 const Checkout = () => {
   const [loading, setLoading] = useState(false);
@@ -52,12 +52,12 @@ const Checkout = () => {
     try {
       // Implement order submission logic here
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-      
+
       toast({
         title: "Order Placed Successfully",
         description: "Your order has been placed and is being processed.",
       });
-      
+
       // Redirect to order confirmation page
       // Implementation will be added later
     } catch (error) {
@@ -93,8 +93,8 @@ const Checkout = () => {
           {/* Order Summary */}
           <Card className={cn(
             "lg:col-span-2 transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
+            isDarkMode
+              ? "bg-gray-800 border-gray-700"
               : "bg-white border-gray-200"
           )}>
             <CardHeader>
@@ -123,7 +123,10 @@ const Checkout = () => {
                       <p className={cn(
                         isDarkMode ? "text-gray-400" : "text-gray-600"
                       )}>Jumlah: {item.quantity}</p>
-                      <p className="text-primary font-medium">
+                      <p className={cn(
+                        "font-medium",
+                        isDarkMode ? "text-white" : "text-gray-900"
+                      )}>
                         Rp {item.price.toLocaleString()}
                       </p>
                     </div>
@@ -136,8 +139,8 @@ const Checkout = () => {
           {/* Payment Details */}
           <Card className={cn(
             "transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
+            isDarkMode
+              ? "bg-gray-800 border-gray-700"
               : "bg-white border-gray-200"
           )}>
             <CardHeader>
@@ -207,14 +210,14 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className={cn(
                     "w-full transition-colors duration-300",
-                    isDarkMode 
-                      ? "bg-blue-600 text-white hover:bg-blue-700" 
+                    isDarkMode
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
                       : ""
-                  )} 
+                  )}
                   disabled={loading}
                 >
                   {loading ? "Memproses..." : "Buat Pesanan"}

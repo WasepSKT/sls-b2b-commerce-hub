@@ -1,9 +1,9 @@
 import { useState } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import CustomerLayout from "@/components/CustomerLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
 import { ArrowLeft, PackageSearch, Truck, CheckCircle2, Clock, AlertTriangle, Package } from "lucide-react";
@@ -13,7 +13,7 @@ const CustomerOrderTracking = () => {
   const { isDarkMode } = useTheme();
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isTracking, setIsTracking] = useState(false);
-  
+
   // Simulated tracking data
   const trackingDetails = {
     orderNumber: "ORD-1234",
@@ -24,27 +24,27 @@ const CustomerOrderTracking = () => {
     destination: "Bandung",
     carrier: "JNE Express",
     history: [
-      { 
-        date: "20 Mei 2025 08:30", 
-        status: "Paket telah dikirim", 
+      {
+        date: "20 Mei 2025 08:30",
+        status: "Paket telah dikirim",
         location: "Jakarta Pusat",
         icon: Truck
       },
-      { 
-        date: "19 Mei 2025 16:45", 
-        status: "Paket sedang diproses di gudang", 
+      {
+        date: "19 Mei 2025 16:45",
+        status: "Paket sedang diproses di gudang",
         location: "Jakarta Pusat",
         icon: Package
       },
-      { 
-        date: "19 Mei 2025 10:15", 
-        status: "Pesanan dikonfirmasi", 
+      {
+        date: "19 Mei 2025 10:15",
+        status: "Pesanan dikonfirmasi",
         location: "Jakarta Pusat",
         icon: CheckCircle2
       },
-      { 
-        date: "18 Mei 2025 14:30", 
-        status: "Pesanan diterima", 
+      {
+        date: "18 Mei 2025 14:30",
+        status: "Pesanan diterima",
         location: "Online",
         icon: Clock
       },
@@ -59,14 +59,10 @@ const CustomerOrderTracking = () => {
   };
 
   return (
-    <DashboardLayout role="customer" pageTitle="Lacak Pesanan">
+    <CustomerLayout pageTitle="Lacak Pesanan">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div className="space-y-1">
-            <h2 className={cn(
-              "text-2xl font-semibold tracking-tight",
-              isDarkMode ? "text-gray-50" : "text-slate-900"
-            )}>Lacak Pesanan</h2>
             <p className={cn(
               "text-sm",
               isDarkMode ? "text-gray-300" : "text-gray-500"
@@ -75,9 +71,9 @@ const CustomerOrderTracking = () => {
             </p>
           </div>
           <Link to="/dashboard/customer/orders">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className={cn(
                 isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : "hover:bg-gray-100"
               )}
@@ -90,8 +86,8 @@ const CustomerOrderTracking = () => {
 
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
             : "bg-white border-gray-200"
         )}>
           <CardHeader>
@@ -107,9 +103,9 @@ const CustomerOrderTracking = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleTrackOrder} className="flex flex-col sm:flex-row gap-3">
-              <Input 
-                type="text" 
-                placeholder="Masukkan nomor resi pengiriman" 
+              <Input
+                type="text"
+                placeholder="Masukkan nomor resi pengiriman"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 className={cn(
@@ -117,12 +113,12 @@ const CustomerOrderTracking = () => {
                   isDarkMode ? "border-gray-600 bg-gray-700 text-gray-200" : ""
                 )}
               />
-              <Button 
+              <Button
                 type="submit"
                 className={cn(
                   "transition-colors duration-300",
-                  isDarkMode 
-                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  isDarkMode
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
                     : ""
                 )}
               >
@@ -137,8 +133,8 @@ const CustomerOrderTracking = () => {
           <>
             <Card className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
                 : "bg-white border-gray-200"
             )}>
               <CardHeader>
@@ -178,8 +174,8 @@ const CustomerOrderTracking = () => {
                       <Badge
                         className={cn(
                           "mt-1 border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                          isDarkMode 
-                            ? "bg-blue-500/20 text-blue-400 border-blue-500/30" 
+                          isDarkMode
+                            ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
                             : "bg-blue-100 text-blue-800 border-blue-300"
                         )}
                       >
@@ -187,7 +183,7 @@ const CustomerOrderTracking = () => {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <p className={cn(
@@ -226,8 +222,8 @@ const CustomerOrderTracking = () => {
 
             <Card className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
                 : "bg-white border-gray-200"
             )}>
               <CardHeader>
@@ -239,13 +235,13 @@ const CustomerOrderTracking = () => {
               <CardContent>
                 <div className="relative ml-2">
                   {/* Vertical Timeline Line */}
-                  <div 
+                  <div
                     className={cn(
                       "absolute top-0 left-3.5 transform -translate-x-1/2 h-full w-0.5",
                       isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                    )} 
+                    )}
                   />
-                  
+
                   {/* Timeline Items */}
                   <div className="space-y-8">
                     {trackingDetails.history.map((item, index) => (
@@ -253,12 +249,12 @@ const CustomerOrderTracking = () => {
                         <div className="flex items-start">
                           <div className={cn(
                             "w-7 h-7 rounded-full flex items-center justify-center mr-4 z-10",
-                            index === 0 
-                              ? isDarkMode 
-                                ? "bg-blue-600" 
+                            index === 0
+                              ? isDarkMode
+                                ? "bg-blue-600"
                                 : "bg-blue-500"
-                              : isDarkMode 
-                                ? "bg-gray-700" 
+                              : isDarkMode
+                                ? "bg-gray-700"
                                 : "bg-gray-200"
                           )}>
                             {index === 0 ? (
@@ -311,7 +307,7 @@ const CustomerOrderTracking = () => {
           </>
         )}
       </div>
-    </DashboardLayout>
+    </CustomerLayout>
   );
 };
 

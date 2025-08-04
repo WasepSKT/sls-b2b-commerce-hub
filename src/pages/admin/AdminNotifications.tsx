@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -8,14 +8,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Switch } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { Bell, Trash2, Settings, Check, AlertCircle, X } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Notification {

@@ -1,13 +1,14 @@
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
 import { ChevronDown } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/components/ui";
 
 const FAQ = () => {
   const { isDarkMode } = useTheme();
@@ -53,7 +54,7 @@ const FAQ = () => {
       isDarkMode ? "bg-gray-900" : "bg-gray-50"
     )}>
       <MainNav />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <div className="relative isolate overflow-hidden">
@@ -107,19 +108,7 @@ const FAQ = () => {
       </main>
 
       {/* Footer */}
-      <footer className={cn(
-        "border-t py-12 transition-colors duration-300",
-        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
-      )}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className={cn(
-            "text-sm",
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          )}>
-            © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

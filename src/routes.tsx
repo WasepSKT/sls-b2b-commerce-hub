@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import Index from "@/pages/Index";
+import PublicEcommerce from "@/pages/PublicEcommerce";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import About from "@/pages/About";
+import About from "@/pages/Index"; // Landing page moved to /about
 import Features from "@/pages/Features";
 import Pricing from "@/pages/Pricing";
 import Contact from "@/pages/Contact";
@@ -49,11 +49,36 @@ import Checkout from "@/pages/customer/Checkout";
 import CustomerProductDetail from "@/pages/customer/CustomerProductDetail";
 import CustomerRewards from "@/pages/customer/CustomerRewards";
 import CustomerOrderTracking from "@/pages/customer/CustomerOrderTracking";
+import DistributorDashboard from "@/pages/distributor/DistributorDashboard";
+import DistributorProducts from "@/pages/distributor/DistributorProducts";
+import DistributorInventory from "@/pages/distributor/DistributorInventory";
+import DistributorAgents from "@/pages/distributor/DistributorAgents";
+import DistributorOrders from "@/pages/distributor/DistributorOrders";
+import DistributorReports from "@/pages/distributor/DistributorReports";
+import DistributorSettings from "@/pages/distributor/DistributorSettings";
+import SharedLayout from "@/components/SharedLayout";
+import ResellerDashboard from "@/pages/reseller/ResellerDashboard";
+import ResellerProfile from "@/pages/reseller/ResellerProfile";
+import ResellerCatalog from "@/pages/reseller/ResellerCatalog";
+import ResellerCart from "@/pages/reseller/ResellerCart";
+import ResellerCheckout from "@/pages/reseller/ResellerCheckout";
+import ResellerOrderTracking from "@/pages/reseller/ResellerOrderTracking";
+import ResellerOrderHistory from "@/pages/reseller/ResellerOrderHistory";
+import ResellerSalesDashboard from "@/pages/reseller/ResellerSalesDashboard";
+import ResellerCommissionReport from "@/pages/reseller/ResellerCommissionReport";
+import ResellerSettings from "@/pages/reseller/ResellerSettings";
+import AgentDirectory from "@/pages/reseller/AgentDirectory";
+import ResellerShopping from "@/pages/reseller/ResellerShopping";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Index />,
+    element: <PublicEcommerce />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/product/:productId",
+    element: <ProductDetail />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -214,155 +239,60 @@ export const router = createBrowserRouter([
     path: "/dashboard/principal",
     element: (
       <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalDashboard />
+        <SharedLayout role="principal" />
       </PrivateRoute>
     ),
     errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <PrincipalDashboard /> },
+      { path: "products", element: <PrincipalProducts /> },
+      { path: "products/:productId", element: <ProductDetail /> },
+      { path: "agents", element: <PrincipalAgents /> },
+      { path: "customers", element: <PrincipalCustomers /> },
+      { path: "orders", element: <PrincipalOrders /> },
+      { path: "reports", element: <PrincipalReports /> },
+      { path: "settings", element: <PrincipalSettings /> },
+    ],
   },
+  // Distributor Routes
   {
-    path: "/dashboard/principal/products",
+    path: "/dashboard/distributor",
     element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalProducts />
+      <PrivateRoute allowedRoles={["distributor"]}>
+        <SharedLayout role="distributor" />
       </PrivateRoute>
     ),
     errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/products/:productId",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <ProductDetail />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/agents",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalAgents />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/customers",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalCustomers />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/orders",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalOrders />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/reports",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalReports />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/principal/settings",
-    element: (
-      <PrivateRoute allowedRoles={["principal"]}>
-        <PrincipalSettings />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <DistributorDashboard /> },
+      { path: "products", element: <DistributorProducts /> },
+      { path: "inventory", element: <DistributorInventory /> },
+      { path: "agents", element: <DistributorAgents /> },
+      { path: "orders", element: <DistributorOrders /> },
+      { path: "reports", element: <DistributorReports /> },
+      { path: "settings", element: <DistributorSettings /> },
+    ],
   },
   // Agent Routes
   {
     path: "/dashboard/agent",
     element: (
       <PrivateRoute allowedRoles={["agent"]}>
-        <AgentDashboard />
+        <SharedLayout role="agent" />
       </PrivateRoute>
     ),
     errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/catalog",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentCatalog />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/selling-products",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentSellingProducts />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/product/add",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentProductAdd />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/product/:productId",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentProductDetail />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/customers",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentCustomers />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/orders",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentOrders />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/commissions",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentCommissions />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
-  },
-  {
-    path: "/dashboard/agent/settings",
-    element: (
-      <PrivateRoute allowedRoles={["agent"]}>
-        <AgentSettings />
-      </PrivateRoute>
-    ),
-    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <AgentDashboard /> },
+      { path: "catalog", element: <AgentCatalog /> },
+      { path: "selling-products", element: <AgentSellingProducts /> },
+      { path: "product/add", element: <AgentProductAdd /> },
+      { path: "product/:productId", element: <AgentProductDetail /> },
+      { path: "customers", element: <AgentCustomers /> },
+      { path: "orders", element: <AgentOrders /> },
+      { path: "commissions", element: <AgentCommissions /> },
+      { path: "settings", element: <AgentSettings /> },
+    ],
   },
   // Customer Routes
   {
@@ -455,10 +385,34 @@ export const router = createBrowserRouter([
     ),
     errorElement: <ErrorBoundary />,
   },
+  // Reseller Routes
+  {
+    path: "/dashboard/reseller",
+    element: (
+      <PrivateRoute allowedRoles={["reseller"]}>
+        <SharedLayout role="reseller" />
+      </PrivateRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <ResellerDashboard /> },
+      { path: "catalog", element: <ResellerCatalog /> },
+      { path: "cart", element: <ResellerCart /> },
+      { path: "checkout", element: <ResellerCheckout /> },
+      { path: "order-tracking", element: <ResellerOrderTracking /> },
+      { path: "order-history", element: <ResellerOrderHistory /> },
+      { path: "sales-dashboard", element: <ResellerSalesDashboard /> },
+      { path: "commission-report", element: <ResellerCommissionReport /> },
+      { path: "settings", element: <ResellerSettings /> },
+      { path: "agent-directory", element: <AgentDirectory /> },
+      { path: "shopping", element: <ResellerShopping /> },
+    ],
+  },
   // Catch all route - redirect to home
   {
     path: "*",
     element: <Navigate to="/" replace />,
     errorElement: <ErrorBoundary />,
   },
-]); 
+]);

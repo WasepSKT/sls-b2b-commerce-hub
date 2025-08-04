@@ -1,8 +1,9 @@
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { Link } from "react-router-dom";
 
 const Pricing = () => {
@@ -61,7 +62,7 @@ const Pricing = () => {
       isDarkMode ? "bg-gray-900" : "bg-gray-50"
     )}>
       <MainNav />
-      
+
       <main className="pt-16">
         {/* Hero Section */}
         <div className="relative isolate overflow-hidden">
@@ -92,9 +93,9 @@ const Pricing = () => {
                 key={plan.name}
                 className={cn(
                   "rounded-xl p-8 transition-all duration-300 relative",
-                  isDarkMode 
-                    ? plan.popular 
-                      ? "bg-blue-600 ring-2 ring-blue-500" 
+                  isDarkMode
+                    ? plan.popular
+                      ? "bg-blue-600 ring-2 ring-blue-500"
                       : "bg-gray-800"
                     : plan.popular
                       ? "bg-blue-500 ring-2 ring-blue-400"
@@ -105,7 +106,7 @@ const Pricing = () => {
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className={cn(
                       "px-4 py-1 rounded-full text-sm font-medium",
-                      isDarkMode 
+                      isDarkMode
                         ? "bg-blue-400 text-blue-950"
                         : "bg-blue-100 text-blue-600"
                     )}>
@@ -117,7 +118,7 @@ const Pricing = () => {
                 <div className="mb-8">
                   <h3 className={cn(
                     "text-2xl font-bold mb-2 font-poppins",
-                    isDarkMode 
+                    isDarkMode
                       ? plan.popular ? "text-white" : "text-white"
                       : plan.popular ? "text-white" : "text-gray-900"
                   )}>
@@ -193,19 +194,7 @@ const Pricing = () => {
       </main>
 
       {/* Footer */}
-      <footer className={cn(
-        "border-t py-12 transition-colors duration-300",
-        isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
-      )}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className={cn(
-            "text-sm",
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          )}>
-            © {new Date().getFullYear()} SLS B2B Commerce Hub. Hak Cipta Dilindungi.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

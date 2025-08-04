@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { AlertTriangle, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 
 interface DeleteProductModalProps {
   isOpen: boolean;

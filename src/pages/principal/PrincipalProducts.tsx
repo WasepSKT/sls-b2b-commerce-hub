@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Textarea } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { 
   Search, 
   Filter, 
@@ -31,14 +31,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +47,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui";
+import { principalProducts as allProducts, Product } from "@/lib/data/products";
 
 // Import the modal components
 import AddProductModal from "@/components/modals/AddProductModal";
@@ -62,29 +63,9 @@ const PrincipalProducts = () => {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<any>(null);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    sku: "",
-    price: "",
-    category: "",
-    stock: "",
-    description: "",
-    details: "",
-    status: "Active",
-  });
-  const [editedProduct, setEditedProduct] = useState({
-    name: "",
-    sku: "",
-    price: "",
-    category: "",
-    stock: "",
-    description: "",
-    details: "",
-    status: "",
-  });
 
   const categories = [
     "Elektronik",
@@ -116,7 +97,7 @@ const PrincipalProducts = () => {
   
   const handleAddProduct = (product: any, file: File | null) => {
     // Validate form
-    if (!product.name || !product.sku || !product.price || !product.category || !product.stock) {
+    if (!product.product_name || !product.SKU || !product.base_price || !product.category) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -135,74 +116,7 @@ const PrincipalProducts = () => {
     setIsAddProductOpen(false);
   };
 
-  // Sample product data
-  const products = [
-    {
-      id: 1,
-      name: "Produk Premium 1",
-      sku: "SKU-001",
-      price: "Rp 150,000",
-      category: "Elektronik",
-      stock: 25,
-      status: "Active"
-    },
-    {
-      id: 2,
-      name: "Produk Premium 2",
-      sku: "SKU-002",
-      price: "Rp 225,000",
-      category: "Fashion",
-      stock: 15,
-      status: "Active"
-    },
-    {
-      id: 3,
-      name: "Produk Premium 3",
-      sku: "SKU-003",
-      price: "Rp 175,000",
-      category: "Kesehatan",
-      stock: 30,
-      status: "Active"
-    },
-    {
-      id: 4,
-      name: "Produk Premium 4",
-      sku: "SKU-004",
-      price: "Rp 320,000",
-      category: "Elektronik",
-      stock: 10,
-      status: "Out of Stock"
-    },
-    {
-      id: 5,
-      name: "Produk Premium 5",
-      sku: "SKU-005",
-      price: "Rp 180,000",
-      category: "Rumah Tangga",
-      stock: 22,
-      status: "Active"
-    },
-    {
-      id: 6,
-      name: "Produk Premium 6",
-      sku: "SKU-006",
-      price: "Rp 250,000",
-      category: "Fashion",
-      stock: 0,
-      status: "Out of Stock"
-    },
-    {
-      id: 7,
-      name: "Produk Premium 7",
-      sku: "SKU-007",
-      price: "Rp 300,000",
-      category: "Elektronik",
-      stock: 18,
-      status: "Active"
-    }
-  ];
-
-  const deleteProduct = (productId: number) => {
+  const deleteProduct = (productId: string) => {
     // In a real app, this would make an API call to delete the product
     toast({
       title: "Produk dihapus",
@@ -255,14 +169,14 @@ const PrincipalProducts = () => {
 
   // Apply filters to products 
   // In a real app, this might be done server-side
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = allProducts.filter(product => {
     let matches = true;
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       matches = matches && (
-        product.name.toLowerCase().includes(query) ||
-        product.sku.toLowerCase().includes(query) ||
+        product.product_name.toLowerCase().includes(query) ||
+        product.SKU.toLowerCase().includes(query) ||
         product.category.toLowerCase().includes(query)
       );
     }
@@ -272,28 +186,14 @@ const PrincipalProducts = () => {
     }
     
     if (activeFilters.status) {
-      matches = matches && product.status === activeFilters.status;
-    }
-    
-    if (activeFilters.stock) {
-      switch (activeFilters.stock) {
-        case "Tersedia":
-          matches = matches && product.stock > 0;
-          break;
-        case "Habis":
-          matches = matches && product.stock === 0;
-          break;
-        case "Menipis":
-          matches = matches && product.stock > 0 && product.stock < 10;
-          break;
-      }
+      matches = matches && (product.is_active ? 'Active' : 'Out of Stock') === activeFilters.status;
     }
     
     return matches;
   });
 
   // Function to handle opening the edit modal
-  const handleOpenEditModal = (product: any) => {
+  const handleOpenEditModal = (product: Product) => {
     setCurrentProduct(product);
     setIsEditProductOpen(true);
   };
@@ -301,7 +201,7 @@ const PrincipalProducts = () => {
   // Function to handle edit product form submission
   const handleEditProduct = (product: any, file: File | null) => {
     // Validate form
-    if (!product.name || !product.sku || !product.price || !product.category) {
+    if (!product.product_name || !product.SKU || !product.base_price || !product.category) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -313,7 +213,7 @@ const PrincipalProducts = () => {
     // In a real app, this would make an API call to update the product
     toast({
       title: "Produk diperbarui",
-      description: `Produk ${product.name} berhasil diperbarui`,
+      description: `Produk ${product.product_name} berhasil diperbarui`,
     });
     
     // Reset form and close modal
@@ -322,13 +222,13 @@ const PrincipalProducts = () => {
   };
 
   // Function to open delete confirmation dialog
-  const handleOpenDeleteDialog = (product: any) => {
+  const handleOpenDeleteDialog = (product: Product) => {
     setCurrentProduct(product);
     setIsDeleteDialogOpen(true);
   };
 
   // Function to navigate to product detail page
-  const navigateToProductDetail = (productId: number) => {
+  const navigateToProductDetail = (productId: string) => {
     console.log(`Navigating to product detail with ID: ${productId}`);
     const url = `/dashboard/principal/products/${productId}`;
     console.log(`Navigation URL: ${url}`);
@@ -359,7 +259,7 @@ const PrincipalProducts = () => {
         <DeleteProductModal 
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
-          onDeleteProduct={deleteProduct}
+          onDeleteProduct={() => currentProduct && deleteProduct(currentProduct.product_id)}
           product={currentProduct}
         />
 
@@ -657,10 +557,6 @@ const PrincipalProducts = () => {
                     <TableHead className={cn(
                       "transition-colors duration-300",
                       isDarkMode ? "text-gray-100" : "text-gray-700"
-                    )}>Stok</TableHead>
-                    <TableHead className={cn(
-                      "transition-colors duration-300",
-                      isDarkMode ? "text-gray-100" : "text-gray-700"
                     )}>Status</TableHead>
                     <TableHead className={cn(
                       "transition-colors duration-300 text-right",
@@ -671,7 +567,7 @@ const PrincipalProducts = () => {
                 <TableBody>
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
-                      <TableRow key={product.id} className={cn(
+                      <TableRow key={product.product_id} className={cn(
                         "transition-colors duration-300",
                         isDarkMode 
                           ? "hover:bg-blue-900/20 border-gray-700" 
@@ -680,20 +576,20 @@ const PrincipalProducts = () => {
                         <TableCell className={cn(
                           "transition-colors duration-300",
                           isDarkMode ? "text-gray-100" : "text-gray-900"
-                        )}>{product.id}</TableCell>
+                        )}>{product.product_id}</TableCell>
                         <TableCell 
                           className={cn(
                             "font-medium transition-colors duration-300 cursor-pointer hover:text-blue-600",
                             isDarkMode ? "text-gray-100 hover:text-blue-400" : "text-gray-900"
                           )}
-                          onClick={() => navigateToProductDetail(product.id)}
+                          onClick={() => navigateToProductDetail(product.product_id)}
                         >
-                          {product.name}
+                          {product.product_name}
                         </TableCell>
                         <TableCell className={cn(
                           "transition-colors duration-300",
                           isDarkMode ? "text-gray-100" : "text-gray-900"
-                        )}>{product.sku}</TableCell>
+                        )}>{product.SKU}</TableCell>
                         <TableCell className={cn(
                           "transition-colors duration-300",
                           isDarkMode ? "text-gray-100" : "text-gray-900"
@@ -701,15 +597,11 @@ const PrincipalProducts = () => {
                         <TableCell className={cn(
                           "transition-colors duration-300",
                           isDarkMode ? "text-gray-100" : "text-gray-900"
-                        )}>{product.price}</TableCell>
-                        <TableCell className={cn(
-                          "transition-colors duration-300",
-                          isDarkMode ? "text-gray-100" : "text-gray-900"
-                        )}>{product.stock}</TableCell>
+                        )}>{`Rp ${product.base_price.toLocaleString()}`}</TableCell>
                         <TableCell>
                           <Badge
                             className={cn(
-                              product.status === "Active"
+                              product.is_active
                                 ? isDarkMode 
                                   ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                                   : "bg-green-100 text-green-800 hover:bg-green-200"
@@ -718,7 +610,7 @@ const PrincipalProducts = () => {
                                   : "bg-red-100 text-red-800 hover:bg-red-200"
                             )}
                           >
-                            {product.status}
+                            {product.is_active ? 'Active' : 'Out of Stock'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -755,7 +647,7 @@ const PrincipalProducts = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={8} className="h-24 text-center">
+                      <TableCell colSpan={7} className="h-24 text-center">
                         <p className={cn(
                           "text-sm",
                           isDarkMode ? "text-gray-400" : "text-gray-500"

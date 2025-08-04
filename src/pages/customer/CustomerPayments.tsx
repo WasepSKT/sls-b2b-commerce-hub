@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { CreditCard, Download, Filter, Plus, Check, X, Calendar, Building, Wallet } from "lucide-react";
-import DashboardLayout from "@/components/DashboardLayout";
+import CustomerLayout from "@/components/CustomerLayout";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import {
@@ -15,17 +15,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose
-} from "@/components/ui/dialog";
+} from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
+import { RadioGroup, RadioGroupItem } from "@/components/ui";
 import { toast } from "@/hooks/use-toast";
 
 interface Payment {
@@ -113,25 +113,25 @@ const CustomerPayments = () => {
   // Format expiry date as MM/YY
   const formatExpiryDate = (value: string): string => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    
+
     if (v.length >= 2) {
       return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
     }
-    
+
     return v;
   };
 
   const applyFilter = (): void => {
     let filtered = [...payments];
-    
+
     if (methodFilter !== "all") {
       filtered = filtered.filter(payment => payment.method === methodFilter);
     }
-    
+
     if (dateFilter) {
       filtered = filtered.filter(payment => payment.date.includes(dateFilter));
     }
-    
+
     setFilteredPayments(filtered);
     setIsFiltered(methodFilter !== "all" || dateFilter !== "");
     setFilterOpen(false);
@@ -147,24 +147,24 @@ const CustomerPayments = () => {
   const handleAddPaymentMethod = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       setAddPaymentOpen(false);
       toast({
         title: "Metode pembayaran berhasil ditambahkan",
         description: `${paymentType === "credit_card" ? "Kartu kredit" : paymentType === "bank_transfer" ? "Transfer bank" : "E-Wallet"} telah ditambahkan ke akun Anda.`,
       });
-      
+
       // Reset form
       setCardNumber("");
       setCardName("");
       setExpiryDate("");
       setCvv("");
       setPaymentType("credit_card");
-      
+
     } catch (error) {
       toast({
         variant: "destructive",
@@ -180,14 +180,10 @@ const CustomerPayments = () => {
   const displayedPayments = isFiltered ? filteredPayments : payments;
 
   return (
-    <DashboardLayout role="customer" pageTitle="Pembayaran">
+    <CustomerLayout pageTitle="Riwayat Pembayaran">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h2 className={cn(
-              "text-2xl font-semibold",
-              isDarkMode ? "text-gray-50" : "text-slate-900"
-            )}>Riwayat Pembayaran</h2>
             <p className={cn(
               isDarkMode ? "text-gray-300" : "text-gray-500"
             )}>
@@ -195,8 +191,8 @@ const CustomerPayments = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className={cn(
                 isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : "",
@@ -207,8 +203,8 @@ const CustomerPayments = () => {
               <Filter className="mr-2 h-4 w-4" />
               Filter {isFiltered && `(${filteredPayments.length})`}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className={cn(
                 isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : "hover:bg-gray-100"
@@ -222,8 +218,8 @@ const CustomerPayments = () => {
 
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
             : "bg-white border-gray-200"
         )}>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -239,9 +235,9 @@ const CustomerPayments = () => {
             </div>
             <div className="flex items-center gap-2">
               {isFiltered && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={resetFilter}
                   className={cn(
                     isDarkMode ? "text-gray-300 hover:bg-gray-700" : ""
@@ -306,16 +302,16 @@ const CustomerPayments = () => {
                       <TableCell>
                         <Badge className={cn(
                           "border transition-colors hover:bg-opacity-0 hover:bg-transparent",
-                          isDarkMode 
-                            ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                          isDarkMode
+                            ? "bg-green-500/20 text-green-400 border-green-500/30"
                             : "bg-green-100 text-green-800 border-green-300"
                         )}>
                           {payment.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className={cn(
                             isDarkMode ? "hover:bg-gray-700 text-gray-300" : ""
@@ -332,8 +328,8 @@ const CustomerPayments = () => {
                       "text-center py-8",
                       isDarkMode ? "text-gray-400" : "text-gray-500"
                     )}>
-                      {isFiltered 
-                        ? "Tidak ada pembayaran yang sesuai dengan filter" 
+                      {isFiltered
+                        ? "Tidak ada pembayaran yang sesuai dengan filter"
                         : "Tidak ada data pembayaran yang tersedia"}
                     </TableCell>
                   </TableRow>
@@ -345,8 +341,8 @@ const CustomerPayments = () => {
 
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
             : "bg-white border-gray-200"
         )}>
           <CardHeader>
@@ -416,9 +412,9 @@ const CustomerPayments = () => {
                     )}>Kadaluwarsa: 08/27</p>
                   </div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className={cn(
                     isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : "hover:bg-gray-100"
                   )}
@@ -426,11 +422,11 @@ const CustomerPayments = () => {
               </div>
 
               <div className="text-center mt-6">
-                <Button 
+                <Button
                   className={cn(
                     "transition-colors duration-300",
-                    isDarkMode 
-                      ? "bg-blue-600 text-white hover:bg-blue-700" 
+                    isDarkMode
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
                       : ""
                   )}
                   onClick={() => setAddPaymentOpen(true)}
@@ -506,8 +502,8 @@ const CustomerPayments = () => {
 
           <DialogFooter className="flex sm:justify-between">
             <DialogClose asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className={cn(
                   isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : ""
                 )}
@@ -515,13 +511,13 @@ const CustomerPayments = () => {
                 Batal
               </Button>
             </DialogClose>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               onClick={applyFilter}
               className={cn(
                 "transition-colors duration-300",
-                isDarkMode 
-                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                isDarkMode
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
                   : ""
               )}
             >
@@ -556,91 +552,91 @@ const CustomerPayments = () => {
                   "text-sm font-medium",
                   isDarkMode ? "text-gray-300" : ""
                 )}>Jenis Pembayaran</h4>
-                
+
                 <RadioGroup value={paymentType} onValueChange={setPaymentType} className="grid grid-cols-3 gap-4">
                   <div className={cn(
                     "flex flex-col items-center space-y-2 rounded-md border p-3 cursor-pointer",
-                    paymentType === "credit_card" 
-                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50" 
+                    paymentType === "credit_card"
+                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50"
                       : isDarkMode ? "border-gray-700" : "border-gray-200"
                   )}>
-                    <RadioGroupItem 
-                      value="credit_card" 
+                    <RadioGroupItem
+                      value="credit_card"
                       id="credit_card"
                       className="sr-only"
                     />
                     <CreditCard className={cn(
                       "h-6 w-6 mb-1",
-                      paymentType === "credit_card" 
-                        ? "text-blue-500" 
+                      paymentType === "credit_card"
+                        ? "text-blue-500"
                         : isDarkMode ? "text-gray-400" : "text-gray-500"
                     )} />
-                    <Label 
+                    <Label
                       htmlFor="credit_card"
                       className={cn(
                         "text-sm cursor-pointer text-center",
-                        paymentType === "credit_card" 
-                          ? "font-medium" 
+                        paymentType === "credit_card"
+                          ? "font-medium"
                           : isDarkMode ? "text-gray-400" : "text-gray-500"
                       )}
                     >
                       Kartu Kredit
                     </Label>
                   </div>
-                  
+
                   <div className={cn(
                     "flex flex-col items-center space-y-2 rounded-md border p-3 cursor-pointer",
-                    paymentType === "bank_transfer" 
-                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50" 
+                    paymentType === "bank_transfer"
+                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50"
                       : isDarkMode ? "border-gray-700" : "border-gray-200"
                   )}>
-                    <RadioGroupItem 
-                      value="bank_transfer" 
+                    <RadioGroupItem
+                      value="bank_transfer"
                       id="bank_transfer"
                       className="sr-only"
                     />
                     <Building className={cn(
                       "h-6 w-6 mb-1",
-                      paymentType === "bank_transfer" 
-                        ? "text-blue-500" 
+                      paymentType === "bank_transfer"
+                        ? "text-blue-500"
                         : isDarkMode ? "text-gray-400" : "text-gray-500"
                     )} />
-                    <Label 
+                    <Label
                       htmlFor="bank_transfer"
                       className={cn(
                         "text-sm cursor-pointer text-center",
-                        paymentType === "bank_transfer" 
-                          ? "font-medium" 
+                        paymentType === "bank_transfer"
+                          ? "font-medium"
                           : isDarkMode ? "text-gray-400" : "text-gray-500"
                       )}
                     >
                       Transfer Bank
                     </Label>
                   </div>
-                  
+
                   <div className={cn(
                     "flex flex-col items-center space-y-2 rounded-md border p-3 cursor-pointer",
-                    paymentType === "ewallet" 
-                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50" 
+                    paymentType === "ewallet"
+                      ? isDarkMode ? "border-blue-500 bg-blue-500/10" : "border-blue-500 bg-blue-50"
                       : isDarkMode ? "border-gray-700" : "border-gray-200"
                   )}>
-                    <RadioGroupItem 
-                      value="ewallet" 
+                    <RadioGroupItem
+                      value="ewallet"
                       id="ewallet"
                       className="sr-only"
                     />
                     <Wallet className={cn(
                       "h-6 w-6 mb-1",
-                      paymentType === "ewallet" 
-                        ? "text-blue-500" 
+                      paymentType === "ewallet"
+                        ? "text-blue-500"
                         : isDarkMode ? "text-gray-400" : "text-gray-500"
                     )} />
-                    <Label 
+                    <Label
                       htmlFor="ewallet"
                       className={cn(
                         "text-sm cursor-pointer text-center",
-                        paymentType === "ewallet" 
-                          ? "font-medium" 
+                        paymentType === "ewallet"
+                          ? "font-medium"
                           : isDarkMode ? "text-gray-400" : "text-gray-500"
                       )}
                     >
@@ -649,7 +645,7 @@ const CustomerPayments = () => {
                   </div>
                 </RadioGroup>
               </div>
-              
+
               {paymentType === "credit_card" && (
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -662,7 +658,7 @@ const CustomerPayments = () => {
                       "flex items-center border rounded-md",
                       isDarkMode ? "border-gray-600 bg-gray-700" : "border-gray-300"
                     )}>
-                      <Input 
+                      <Input
                         type="text"
                         value={cardNumber}
                         onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
@@ -681,14 +677,14 @@ const CustomerPayments = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label className={cn(
                       isDarkMode ? "text-gray-300" : ""
                     )}>
                       Nama pada Kartu
                     </Label>
-                    <Input 
+                    <Input
                       type="text"
                       value={cardName}
                       onChange={(e) => setCardName(e.target.value)}
@@ -698,7 +694,7 @@ const CustomerPayments = () => {
                       )}
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label className={cn(
@@ -706,7 +702,7 @@ const CustomerPayments = () => {
                       )}>
                         Tanggal Kadaluarsa
                       </Label>
-                      <Input 
+                      <Input
                         type="text"
                         value={expiryDate}
                         onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
@@ -717,14 +713,14 @@ const CustomerPayments = () => {
                         )}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label className={cn(
                         isDarkMode ? "text-gray-300" : ""
                       )}>
                         CVV
                       </Label>
-                      <Input 
+                      <Input
                         type="password"
                         value={cvv}
                         onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
@@ -763,14 +759,14 @@ const CustomerPayments = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label className={cn(
                       isDarkMode ? "text-gray-300" : ""
                     )}>
                       Nomor Rekening
                     </Label>
-                    <Input 
+                    <Input
                       type="text"
                       placeholder="Masukkan nomor rekening"
                       className={cn(
@@ -778,14 +774,14 @@ const CustomerPayments = () => {
                       )}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label className={cn(
                       isDarkMode ? "text-gray-300" : ""
                     )}>
                       Nama Pemilik Rekening
                     </Label>
-                    <Input 
+                    <Input
                       type="text"
                       placeholder="Masukkan nama pemilik rekening"
                       className={cn(
@@ -820,14 +816,14 @@ const CustomerPayments = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label className={cn(
                       isDarkMode ? "text-gray-300" : ""
                     )}>
                       Nomor Telepon
                     </Label>
-                    <Input 
+                    <Input
                       type="tel"
                       placeholder="Masukkan nomor telepon yang terdaftar"
                       className={cn(
@@ -841,8 +837,8 @@ const CustomerPayments = () => {
 
             <DialogFooter className="pt-4">
               <DialogClose asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   type="button"
                   className={cn(
                     isDarkMode ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700" : ""
@@ -851,13 +847,13 @@ const CustomerPayments = () => {
                   Batal
                 </Button>
               </DialogClose>
-              <Button 
+              <Button
                 type="submit"
                 disabled={loading}
                 className={cn(
                   "transition-colors duration-300",
-                  isDarkMode 
-                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  isDarkMode
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
                     : ""
                 )}
               >
@@ -882,7 +878,7 @@ const CustomerPayments = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </CustomerLayout>
   );
 };
 

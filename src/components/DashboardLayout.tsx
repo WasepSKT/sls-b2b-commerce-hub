@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { Search, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import DashboardSidebar from "./DashboardSidebar";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ import UserProfileDropdown from "./UserProfileDropdown";
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  role: "principal" | "agent" | "customer";
+  role: "principal" | "agent" | "customer" | "distributor" | "reseller";
   pageTitle: string;
   className?: string;
 }

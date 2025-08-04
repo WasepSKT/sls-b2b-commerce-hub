@@ -4,8 +4,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui";
+import { Button } from "@/components/ui";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, X, Check, AlertCircle, Settings, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui";
 
 interface Notification {
   id: number;
