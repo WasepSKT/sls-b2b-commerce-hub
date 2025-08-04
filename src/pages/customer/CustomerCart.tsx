@@ -13,6 +13,7 @@ import { useAddressStore, Address } from "@/lib/store/addresses";
 import { usePaymentMethodStore, PaymentMethod } from "@/lib/store/paymentMethods";
 import { cn } from "@/lib/utils";
 import ScrollToTop from "@/components/ScrollToTop";
+import { getProductsByRole } from "@/lib/data/products";
 import {
   Dialog,
   DialogContent,
@@ -358,33 +359,36 @@ const CustomerCart = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [orderNotes, setOrderNotes] = useState("");
 
-  // Sample cart data
+  // Get customer products from centralized data
+  const customerProducts = getProductsByRole('customer');
+
+  // Sample cart data using actual products
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: 1,
-      name: "Produk Premium 1",
-      price: "Rp 135,000",
-      priceValue: 135000,
+      name: customerProducts[0]?.productName || "Produk Premium 1",
+      price: `Rp ${customerProducts[0]?.basePrice.toLocaleString() || "135,000"}`,
+      priceValue: customerProducts[0]?.basePrice || 135000,
       quantity: 2,
-      image: "https://placehold.co/100x100",
+      image: customerProducts[0]?.imageUrls?.[0] || "https://placehold.co/100x100",
       discount: "10%"
     },
     {
       id: 2,
-      name: "Produk Premium 2",
-      price: "Rp 191,250",
-      priceValue: 191250,
+      name: customerProducts[1]?.productName || "Produk Premium 2",
+      price: `Rp ${customerProducts[1]?.basePrice.toLocaleString() || "191,250"}`,
+      priceValue: customerProducts[1]?.basePrice || 191250,
       quantity: 1,
-      image: "https://placehold.co/100x100",
+      image: customerProducts[1]?.imageUrls?.[0] || "https://placehold.co/100x100",
       discount: "15%"
     },
     {
       id: 3,
-      name: "Produk Premium 3",
-      price: "Rp 166,250",
-      priceValue: 166250,
+      name: customerProducts[2]?.productName || "Produk Premium 3",
+      price: `Rp ${customerProducts[2]?.basePrice.toLocaleString() || "166,250"}`,
+      priceValue: customerProducts[2]?.basePrice || 166250,
       quantity: 3,
-      image: "https://placehold.co/100x100",
+      image: customerProducts[2]?.imageUrls?.[0] || "https://placehold.co/100x100",
       discount: "5%"
     }
   ]);

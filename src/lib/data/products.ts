@@ -112,7 +112,7 @@ export const mockReviews: Review[] = [
     productId: "prod-001",
     userId: "user-002",
     userName: "Siti Nurhaliza",
-    userAvatar: "https://images.unsplash.com/photo-1494790108755-2616b6b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+    userAvatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
     userVerified: true,
     rating: 4,
     title: "Kualitas Bagus, Harga Worth It",
@@ -655,39 +655,94 @@ export const principalProducts: Product[] = [
   }
 ];
 
-// Distributor Products (dengan markup 15%)
+// Role-based Products (defined after principalProducts to avoid circular dependency)
 export const distributorProducts: Product[] = principalProducts.map(product => ({
   ...product,
   basePrice: Math.round(product.basePrice * 1.15), // 15% markup
   productId: `dist-${product.productId}`,
 }));
 
-// Agent Products (dengan markup 25%)
 export const agentProducts: Product[] = principalProducts.map(product => ({
   ...product,
   basePrice: Math.round(product.basePrice * 1.25), // 25% markup
   productId: `agent-${product.productId}`,
 }));
 
-// Reseller Products (dengan markup 35%)
 export const resellerProducts: Product[] = principalProducts.map(product => ({
   ...product,
   basePrice: Math.round(product.basePrice * 1.35), // 35% markup
   productId: `reseller-${product.productId}`,
 }));
 
-// Customer Products (dengan markup 50%)
 export const customerProducts: Product[] = principalProducts.map(product => ({
   ...product,
   basePrice: Math.round(product.basePrice * 1.50), // 50% markup
   productId: `customer-${product.productId}`,
 }));
 
+// All products array - defined after all role-based products
+export const allProducts: Product[] = [
+  ...principalProducts,
+  ...agentProducts,
+  ...distributorProducts,
+  ...resellerProducts,
+  ...customerProducts,
+];
 
-
-// Helper functions
+// All helper functions moved to end to avoid circular dependency
 export const getProductById = (productId: string) => {
-  return principalProducts.find(product => product.productId === productId);
+  console.log('=== DEBUG getProductById ===');
+  console.log('Called with productId:', productId);
+  console.log('principalProducts length:', principalProducts?.length);
+  console.log('principalProducts first item:', principalProducts?.[0]?.productId);
+  console.log('agentProducts length:', agentProducts?.length);
+  console.log('allProducts length:', allProducts?.length);
+  
+  // Check if arrays are defined
+  if (!principalProducts) {
+    console.error('principalProducts is undefined!');
+    return undefined;
+  }
+  
+  if (!agentProducts) {
+    console.error('agentProducts is undefined!');
+    return undefined;
+  }
+  
+  // First try to find in principalProducts
+  console.log('Searching in principalProducts...');
+  let result = principalProducts.find(product => product.productId === productId);
+  
+  if (result) {
+    console.log('✅ Found in principalProducts:', result.productName);
+    return result;
+  }
+  
+  console.log('❌ Not found in principalProducts, searching in role-based products...');
+  
+  // If not found, try role-based products
+  const roleProducts = [
+    ...agentProducts,
+    ...distributorProducts,
+    ...resellerProducts,
+    ...customerProducts
+  ];
+  
+  console.log('roleProducts length:', roleProducts.length);
+  console.log('roleProducts first item:', roleProducts[0]?.productId);
+  
+  result = roleProducts.find(product => product.productId === productId);
+  
+  if (result) {
+    console.log('✅ Found in role-based products:', result.productName);
+    return result;
+  }
+  
+  console.log('❌ Product not found in any array');
+  console.log('Available productIds in principalProducts:', principalProducts.map(p => p.productId));
+  console.log('Available productIds in roleProducts:', roleProducts.map(p => p.productId));
+  
+  return undefined;
 };
 
 export const getInventoryByProductId = (productId: string) => {
@@ -739,7 +794,7 @@ export const getRecommendedProducts = (type: 'featured' | 'trending' | 'similar'
     .slice(0, limit);
 
   return recommendations.map(rec => {
-    const product = getProductById(rec.productId);
+    const product = principalProducts.find(p => p.productId === rec.productId);
     return {
       ...product,
       recommendationType: rec.recommendationType,
@@ -750,7 +805,7 @@ export const getRecommendedProducts = (type: 'featured' | 'trending' | 'similar'
 };
 
 export const getSimilarProducts = (currentProductId: string, limit: number = 4) => {
-  const currentProduct = getProductById(currentProductId);
+  const currentProduct = principalProducts.find(p => p.productId === currentProductId);
   if (!currentProduct) return [];
 
   // Get products in the same category
@@ -781,3 +836,15 @@ export const getProductsByRole = (role: string) => {
       return principalProducts;
   }
 };
+
+// Debug function to verify data
+export const debugProductData = () => {
+  console.log('Debug Product Data:');
+  console.log('principalProducts length:', principalProducts.length);
+  console.log('allProducts length:', allProducts.length);
+  console.log('prod-001 in principalProducts:', principalProducts.find(p => p.productId === 'prod-001')?.productName);
+  console.log('prod-006 in principalProducts:', principalProducts.find(p => p.productId === 'prod-006')?.productName);
+  console.log('prod-001 in allProducts:', allProducts.find(p => p.productId === 'prod-001')?.productName);
+  console.log('prod-006 in allProducts:', allProducts.find(p => p.productId === 'prod-006')?.productName);
+};
+

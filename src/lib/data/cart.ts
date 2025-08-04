@@ -14,11 +14,11 @@ export const carts: Cart[] = [
     customerId: "customer-1",
     items: [
       {
-        productId: "prod-1",
+        productId: "prod-001",
         quantity: 1
       },
       {
-        productId: "prod-3",
+        productId: "prod-003",
         quantity: 2
       }
     ],

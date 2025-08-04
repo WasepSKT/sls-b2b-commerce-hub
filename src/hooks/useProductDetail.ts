@@ -5,7 +5,7 @@ import {
   getReviewsByProductId, 
   getAverageRatingByProductId, 
   getReviewCountByProductId, 
-  getSimilarProducts 
+  getSimilarProducts
 } from '@/lib/data/products';
 import { Product, Inventory, Review } from '@/lib/data/products';
 
@@ -37,25 +37,20 @@ export const useProductDetail = (productId: string | undefined): UseProductDetai
       return;
     }
 
-    try {
-      const productData = getProductById(productId);
-      if (!productData) {
-        setError('Product not found');
-        setLoading(false);
-        return;
-      }
-
-      setProduct(productData);
-      setInventory(getInventoryByProductId(productId));
-      setReviews(getReviewsByProductId(productId));
-      setAverageRating(getAverageRatingByProductId(productId));
-      setReviewCount(getReviewCountByProductId(productId));
-      setSimilarProducts(getSimilarProducts(productId, 4));
+    const productData = getProductById(productId);
+    if (!productData) {
+      setError('Product not found');
       setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load product');
-      setLoading(false);
+      return;
     }
+
+    setProduct(productData);
+    setInventory(getInventoryByProductId(productId));
+    setReviews(getReviewsByProductId(productId));
+    setAverageRating(getAverageRatingByProductId(productId));
+    setReviewCount(getReviewCountByProductId(productId));
+    setSimilarProducts(getSimilarProducts(productId, 4));
+    setLoading(false);
   }, [productId]);
 
   return {

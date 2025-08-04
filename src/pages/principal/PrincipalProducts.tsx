@@ -7,14 +7,14 @@ import { Button } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Textarea } from "@/components/ui";
 import { Label } from "@/components/ui";
-import { 
-  Search, 
-  Filter, 
-  Package, 
-  Plus, 
-  Edit, 
-  Trash, 
-  Image as ImageIcon, 
+import {
+  Search,
+  Filter,
+  Package,
+  Plus,
+  Edit,
+  Trash,
+  Image as ImageIcon,
   X,
   ChevronDown,
   Save,
@@ -48,7 +48,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui";
-import { principalProducts as allProducts, Product } from "@/lib/data/products";
+import { principalProducts as allProducts, Product, getProductsByRole } from "@/lib/data/products";
 
 // Import the modal components
 import AddProductModal from "@/components/modals/AddProductModal";
@@ -94,7 +94,7 @@ const PrincipalProducts = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
   };
-  
+
   const handleAddProduct = (product: any, file: File | null) => {
     // Validate form
     if (!product.product_name || !product.SKU || !product.base_price || !product.category) {
@@ -111,7 +111,7 @@ const PrincipalProducts = () => {
       title: "Produk ditambahkan",
       description: "Produk baru berhasil ditambahkan",
     });
-    
+
     // Close modal
     setIsAddProductOpen(false);
   };
@@ -122,17 +122,23 @@ const PrincipalProducts = () => {
       title: "Produk dihapus",
       description: `Produk #${productId} telah dihapus`,
     });
-    
+
     // Close the dialog and reset current product
     setIsDeleteDialogOpen(false);
     setCurrentProduct(null);
   };
 
+  // Get product stats from actual data
+  const allProducts = getProductsByRole('principal');
+  const activeProducts = allProducts.filter(p => p.isActive);
+  const lowStockProducts = allProducts.filter(p => p.isActive && Math.random() < 0.3); // Simulate low stock
+  const outOfStockProducts = allProducts.filter(p => !p.isActive);
+
   const productStats = [
-    { title: "Total Produk", value: "152", icon: Package, iconClass: "text-primary" },
-    { title: "Produk Aktif", value: "134", icon: Package, iconClass: "text-green-500" },
-    { title: "Stok Menipis", value: "8", icon: Package, iconClass: "text-amber-500" },
-    { title: "Habis Stok", value: "10", icon: Package, iconClass: "text-red-500" },
+    { title: "Total Produk", value: allProducts.length.toString(), icon: Package, iconClass: "text-primary" },
+    { title: "Produk Aktif", value: activeProducts.length.toString(), icon: Package, iconClass: "text-green-500" },
+    { title: "Stok Menipis", value: lowStockProducts.length.toString(), icon: Package, iconClass: "text-amber-500" },
+    { title: "Habis Stok", value: outOfStockProducts.length.toString(), icon: Package, iconClass: "text-red-500" },
   ];
 
   // Filter states
@@ -141,13 +147,13 @@ const PrincipalProducts = () => {
     status: "",
     stock: ""
   });
-  
+
   const applyFilter = (filterType: string, value: string) => {
     setActiveFilters({
       ...activeFilters,
       [filterType]: value
     });
-    
+
     toast({
       title: "Filter diterapkan",
       description: `Filter ${filterType}: ${value}`,
@@ -160,7 +166,7 @@ const PrincipalProducts = () => {
       status: "",
       stock: ""
     });
-    
+
     toast({
       title: "Filter dihapus",
       description: "Semua filter telah dihapus",
@@ -171,7 +177,7 @@ const PrincipalProducts = () => {
   // In a real app, this might be done server-side
   const filteredProducts = allProducts.filter(product => {
     let matches = true;
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       matches = matches && (
@@ -180,15 +186,15 @@ const PrincipalProducts = () => {
         product.category.toLowerCase().includes(query)
       );
     }
-    
+
     if (activeFilters.category) {
       matches = matches && product.category === activeFilters.category;
     }
-    
+
     if (activeFilters.status) {
       matches = matches && (product.is_active ? 'Active' : 'Out of Stock') === activeFilters.status;
     }
-    
+
     return matches;
   });
 
@@ -215,7 +221,7 @@ const PrincipalProducts = () => {
       title: "Produk diperbarui",
       description: `Produk ${product.product_name} berhasil diperbarui`,
     });
-    
+
     // Reset form and close modal
     setIsEditProductOpen(false);
     setCurrentProduct(null);
@@ -239,7 +245,7 @@ const PrincipalProducts = () => {
     <DashboardLayout role="principal" pageTitle="Manajemen Produk">
       <div className="space-y-6">
         {/* Add Product Modal */}
-        <AddProductModal 
+        <AddProductModal
           isOpen={isAddProductOpen}
           onClose={() => setIsAddProductOpen(false)}
           onAddProduct={handleAddProduct}
@@ -247,7 +253,7 @@ const PrincipalProducts = () => {
         />
 
         {/* Edit Product Modal */}
-        <EditProductModal 
+        <EditProductModal
           isOpen={isEditProductOpen}
           onClose={() => setIsEditProductOpen(false)}
           onEditProduct={handleEditProduct}
@@ -256,7 +262,7 @@ const PrincipalProducts = () => {
         />
 
         {/* Delete Confirmation Modal */}
-        <DeleteProductModal 
+        <DeleteProductModal
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onDeleteProduct={() => currentProduct && deleteProduct(currentProduct.product_id)}
@@ -285,17 +291,17 @@ const PrincipalProducts = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={cn(
                   "pl-10 pr-4 transition-colors duration-300",
-                  isDarkMode 
+                  isDarkMode
                     ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                     : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-500"
                 )}
               />
             </div>
-            <Button 
+            <Button
               className={cn(
                 "transition-colors duration-300",
-                isDarkMode 
-                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                isDarkMode
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "bg-blue-600 text-white hover:bg-blue-700"
               )}
               onClick={() => setIsAddProductOpen(true)}
@@ -310,8 +316,8 @@ const PrincipalProducts = () => {
           {productStats.map((stat, index) => (
             <Card key={index} className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-transparent backdrop-blur-sm border-blue-900/50" 
+              isDarkMode
+                ? "bg-transparent backdrop-blur-sm border-blue-900/50"
                 : "bg-white border-gray-200 hover:bg-gray-50"
             )}>
               <CardContent className="p-6">
@@ -341,8 +347,8 @@ const PrincipalProducts = () => {
 
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-transparent backdrop-blur-sm border-blue-900/50" 
+          isDarkMode
+            ? "bg-transparent backdrop-blur-sm border-blue-900/50"
             : "bg-white border-gray-200 hover:bg-gray-50"
         )}>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -355,20 +361,20 @@ const PrincipalProducts = () => {
                 "transition-colors duration-300",
                 isDarkMode ? "text-gray-300" : "text-gray-500"
               )}>
-                {Object.values(activeFilters).some(filter => filter !== "") 
-                  ? "Menampilkan produk dengan filter aktif" 
+                {Object.values(activeFilters).some(filter => filter !== "")
+                  ? "Menampilkan produk dengan filter aktif"
                   : "Kelola semua produk Anda"}
               </CardDescription>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className={cn(
                     "transition-colors duration-300",
-                    isDarkMode 
-                      ? "border-blue-700 text-blue-300 hover:bg-blue-900/30" 
+                    isDarkMode
+                      ? "border-blue-700 text-blue-300 hover:bg-blue-900/30"
                       : "border-gray-200 text-gray-700 hover:bg-gray-100"
                   )}
                 >
@@ -377,7 +383,7 @@ const PrincipalProducts = () => {
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
+              <DropdownMenuContent
                 className={cn(
                   "w-56",
                   isDarkMode ? "bg-transparent backdrop-blur-sm border-blue-900/50 text-gray-100" : ""
@@ -394,11 +400,11 @@ const PrincipalProducts = () => {
                     "text-xs pt-0",
                     isDarkMode ? "text-blue-400" : "text-gray-500"
                   )}>Kategori</DropdownMenuLabel>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("category", "")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.category === "" 
+                      activeFilters.category === ""
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
@@ -406,12 +412,12 @@ const PrincipalProducts = () => {
                     Semua Kategori
                   </DropdownMenuItem>
                   {categories.map((category) => (
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       key={category}
                       onClick={() => applyFilter("category", category)}
                       className={cn(
                         "cursor-pointer",
-                        activeFilters.category === category 
+                        activeFilters.category === category
                           ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                           : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                       )}
@@ -426,33 +432,33 @@ const PrincipalProducts = () => {
                     "text-xs pt-0",
                     isDarkMode ? "text-blue-400" : "text-gray-500"
                   )}>Status</DropdownMenuLabel>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("status", "")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.status === "" 
+                      activeFilters.status === ""
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
                   >
                     Semua Status
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("status", "Active")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.status === "Active" 
+                      activeFilters.status === "Active"
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
                   >
                     Aktif
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("status", "Out of Stock")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.status === "Out of Stock" 
+                      activeFilters.status === "Out of Stock"
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
@@ -466,22 +472,22 @@ const PrincipalProducts = () => {
                     "text-xs pt-0",
                     isDarkMode ? "text-blue-400" : "text-gray-500"
                   )}>Ketersediaan</DropdownMenuLabel>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("stock", "")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.stock === "" 
+                      activeFilters.stock === ""
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
                   >
                     Semua Stok
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => applyFilter("stock", "Tersedia")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.stock === "Tersedia" 
+                      activeFilters.stock === "Tersedia"
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
@@ -492,7 +498,7 @@ const PrincipalProducts = () => {
                     onClick={() => applyFilter("stock", "Habis")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.stock === "Habis" 
+                      activeFilters.stock === "Habis"
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
@@ -503,7 +509,7 @@ const PrincipalProducts = () => {
                     onClick={() => applyFilter("stock", "Menipis")}
                     className={cn(
                       "cursor-pointer",
-                      activeFilters.stock === "Menipis" 
+                      activeFilters.stock === "Menipis"
                         ? isDarkMode ? "bg-blue-900/30 text-blue-300" : "bg-blue-50 text-blue-600"
                         : isDarkMode ? "text-gray-300 hover:bg-blue-900/20" : "hover:bg-gray-100"
                     )}
@@ -569,15 +575,15 @@ const PrincipalProducts = () => {
                     filteredProducts.map((product) => (
                       <TableRow key={product.product_id} className={cn(
                         "transition-colors duration-300",
-                        isDarkMode 
-                          ? "hover:bg-blue-900/20 border-gray-700" 
+                        isDarkMode
+                          ? "hover:bg-blue-900/20 border-gray-700"
                           : "hover:bg-blue-50/70 border-gray-200"
                       )}>
                         <TableCell className={cn(
                           "transition-colors duration-300",
                           isDarkMode ? "text-gray-100" : "text-gray-900"
                         )}>{product.product_id}</TableCell>
-                        <TableCell 
+                        <TableCell
                           className={cn(
                             "font-medium transition-colors duration-300 cursor-pointer hover:text-blue-600",
                             isDarkMode ? "text-gray-100 hover:text-blue-400" : "text-gray-900"
@@ -602,7 +608,7 @@ const PrincipalProducts = () => {
                           <Badge
                             className={cn(
                               product.is_active
-                                ? isDarkMode 
+                                ? isDarkMode
                                   ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                                   : "bg-green-100 text-green-800 hover:bg-green-200"
                                 : isDarkMode
@@ -615,27 +621,27 @@ const PrincipalProducts = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => handleOpenEditModal(product)}
                               className={cn(
                                 "transition-colors duration-300",
-                                isDarkMode 
-                                  ? "text-blue-400 hover:text-blue-300 hover:bg-blue-900/30" 
+                                isDarkMode
+                                  ? "text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
                                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                               )}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => handleOpenDeleteDialog(product)}
                               className={cn(
                                 "transition-colors duration-300",
-                                isDarkMode 
-                                  ? "text-red-400 hover:text-red-300 hover:bg-red-900/30" 
+                                isDarkMode
+                                  ? "text-red-400 hover:text-red-300 hover:bg-red-900/30"
                                   : "text-red-600 hover:text-red-700 hover:bg-red-100"
                               )}
                             >

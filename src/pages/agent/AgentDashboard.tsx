@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { 
-  BarChart, 
-  Package, 
-  Users, 
-  ShoppingCart, 
-  CreditCard, 
+import {
+  BarChart,
+  Package,
+  Users,
+  ShoppingCart,
+  CreditCard,
   TrendingUp,
   Bell,
   Calendar,
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
+import { getProductsByRole } from "@/lib/data/products";
 
 const AgentDashboard = () => {
   const { isDarkMode } = useTheme();
@@ -88,63 +89,29 @@ const AgentDashboard = () => {
     }
   ];
 
-  const topProducts = [
-    {
-      name: "Produk A",
-      sold: 45,
-      revenue: "Rp 15.000.000",
-      growth: "+12%"
-    },
-    {
-      name: "Produk B",
-      sold: 38,
-      revenue: "Rp 12.500.000",
-      growth: "+8%"
-    },
-    {
-      name: "Produk C",
-      sold: 32,
-      revenue: "Rp 9.800.000",
-      growth: "+5%"
-    }
-  ];
+  // Get agent products from centralized data
+  const agentProducts = getProductsByRole('agent');
 
-  // Data produk yang sedang dalam penjualan
-  const currentSellingProducts = [
-    {
-      id: 1,
-      name: "Produk Premium A",
-      category: "Electronics",
-      price: "Rp 1.500.000",
-      stock: 25,
-      commission: "10%",
-      salesCount: 12,
-      lastSold: "2 jam yang lalu",
-      image: "https://via.placeholder.com/200"
-    },
-    {
-      id: 2,
-      name: "Produk Unggulan B",
-      category: "Fashion",
-      price: "Rp 750.000",
-      stock: 40,
-      commission: "15%",
-      salesCount: 8,
-      lastSold: "5 jam yang lalu",
-      image: "https://via.placeholder.com/200"
-    },
-    {
-      id: 3,
-      name: "Produk Spesial C",
-      category: "Electronics",
-      price: "Rp 2.500.000",
-      stock: 15,
-      commission: "12%",
-      salesCount: 5,
-      lastSold: "1 hari yang lalu",
-      image: "https://via.placeholder.com/200"
-    },
-  ];
+  // Generate top products data from actual products
+  const topProducts = agentProducts.slice(0, 3).map((product, index) => ({
+    name: product.productName,
+    sold: Math.floor(Math.random() * 50) + 20,
+    revenue: `Rp ${(product.basePrice * (Math.floor(Math.random() * 10) + 5)).toLocaleString()}`,
+    growth: `+${Math.floor(Math.random() * 20) + 5}%`
+  }));
+
+  // Generate current selling products data from actual products
+  const currentSellingProducts = agentProducts.slice(0, 3).map((product, index) => ({
+    id: index + 1,
+    name: product.productName,
+    category: product.category,
+    price: `Rp ${product.basePrice.toLocaleString()}`,
+    stock: Math.floor(Math.random() * 50) + 10,
+    commission: `${Math.floor(Math.random() * 10) + 8}%`,
+    salesCount: Math.floor(Math.random() * 20) + 5,
+    lastSold: `${Math.floor(Math.random() * 24) + 1} jam yang lalu`,
+    image: product.imageUrls?.[0] || "https://via.placeholder.com/200"
+  }));
 
   // Handler untuk melihat detail produk
   const handleViewProductDetail = (productId: number) => {
@@ -195,8 +162,8 @@ const AgentDashboard = () => {
           {stats.map((stat, index) => (
             <Card key={index} className={cn(
               "transition-colors duration-300",
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700 hover:bg-gray-750" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
                 : "bg-white border-gray-200 hover:bg-gray-50"
             )}>
               <CardContent className="p-6">
@@ -232,8 +199,8 @@ const AgentDashboard = () => {
                   </div>
                   <div className={cn(
                     "rounded-full p-2",
-                    stat.trend === "up" 
-                      ? "bg-green-500/20 text-green-500" 
+                    stat.trend === "up"
+                      ? "bg-green-500/20 text-green-500"
                       : "bg-red-500/20 text-red-500"
                   )}>
                     <stat.icon className="h-6 w-6" />
@@ -247,8 +214,8 @@ const AgentDashboard = () => {
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
           <Card className={cn(
             "transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
+            isDarkMode
+              ? "bg-gray-800 border-gray-700"
               : "bg-white border-gray-200"
           )}>
             <CardHeader>
@@ -262,15 +229,15 @@ const AgentDashboard = () => {
                 {recentActivities.map((activity) => (
                   <div key={activity.id} className={cn(
                     "flex items-center justify-between p-3 rounded-lg",
-                    isDarkMode 
-                      ? "bg-gray-750 hover:bg-gray-700" 
+                    isDarkMode
+                      ? "bg-gray-750 hover:bg-gray-700"
                       : "bg-gray-50 hover:bg-gray-100"
                   )}>
                     <div className="flex items-center space-x-4">
                       <div className={cn(
                         "p-2 rounded-full",
-                        activity.status === "success" 
-                          ? "bg-green-500/20 text-green-500" 
+                        activity.status === "success"
+                          ? "bg-green-500/20 text-green-500"
                           : "bg-blue-500/20 text-blue-500"
                       )}>
                         {activity.type === "order" && <ShoppingCart className="h-4 w-4" />}
@@ -300,8 +267,8 @@ const AgentDashboard = () => {
 
           <Card className={cn(
             "transition-colors duration-300",
-            isDarkMode 
-              ? "bg-gray-800 border-gray-700" 
+            isDarkMode
+              ? "bg-gray-800 border-gray-700"
               : "bg-white border-gray-200"
           )}>
             <CardHeader>
@@ -315,8 +282,8 @@ const AgentDashboard = () => {
                 {topProducts.map((product, index) => (
                   <div key={index} className={cn(
                     "flex items-center justify-between p-3 rounded-lg",
-                    isDarkMode 
-                      ? "bg-gray-750 hover:bg-gray-700" 
+                    isDarkMode
+                      ? "bg-gray-750 hover:bg-gray-700"
                       : "bg-gray-50 hover:bg-gray-100"
                   )}>
                     <div className="flex items-center space-x-4">
@@ -350,7 +317,7 @@ const AgentDashboard = () => {
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Produk yang Sedang Dijual */}
         <div>
           <div className="flex justify-between items-center mb-4">
@@ -366,8 +333,8 @@ const AgentDashboard = () => {
                 Produk yang sedang Anda jual saat ini
               </p>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleViewSellingProducts}
               className={cn(
                 isDarkMode ? "border-gray-700 text-gray-300 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-100"
@@ -377,7 +344,7 @@ const AgentDashboard = () => {
               Lihat Semua
             </Button>
           </div>
-          
+
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {currentSellingProducts.map((product) => (
               <Card key={product.id} className={cn(
@@ -417,7 +384,7 @@ const AgentDashboard = () => {
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex justify-between items-center">
                       <div>
                         <p className={cn(
@@ -449,12 +416,12 @@ const AgentDashboard = () => {
                       </div>
                     </div>
 
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={() => handleViewProductDetail(product.id)}
                       className={cn(
                         "w-full",
-                        isDarkMode 
+                        isDarkMode
                           ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                           : "border-gray-200 hover:bg-gray-100"
                       )}

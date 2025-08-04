@@ -21,22 +21,9 @@ import {
 import DashboardLayout from "@/components/DashboardLayout";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
+import { getProductsByRole, type Product } from "@/lib/data/products";
 
-interface SellingProduct {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  stock: number;
-  commission: string;
-  description: string;
-  salesCount: number;
-  lastSold: string;
-  status: string; // "active", "out_of_stock", "pending"
-  image: string;
-  tags: string[];
-  startDate: string;
-}
+// Using Product interface from products.ts instead of local interface
 
 const AgentSellingProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,84 +40,8 @@ const AgentSellingProducts = () => {
     return `https://via.placeholder.com/${width}x${height}/${bgColor}/${textColor}?text=Product+Image`;
   };
 
-  // Dummy data for selling products
-  const sellingProducts: SellingProduct[] = [
-    {
-      id: 1,
-      name: "Produk Premium A",
-      category: "Electronics",
-      price: "Rp 1.500.000",
-      stock: 25,
-      commission: "10%",
-      description: "Produk berkualitas tinggi dengan fitur terbaik di kelasnya",
-      salesCount: 12,
-      lastSold: "2 jam yang lalu",
-      status: "active",
-      image: "https://via.placeholder.com/200",
-      tags: ["Bestseller", "Premium"],
-      startDate: "15 Apr 2023"
-    },
-    {
-      id: 2,
-      name: "Produk Unggulan B",
-      category: "Fashion",
-      price: "Rp 750.000",
-      stock: 0,
-      commission: "15%",
-      description: "Desain modern dengan kualitas terbaik",
-      salesCount: 8,
-      lastSold: "5 jam yang lalu",
-      status: "out_of_stock",
-      image: "https://via.placeholder.com/200",
-      tags: ["New", "Trending"],
-      startDate: "20 Mei 2023"
-    },
-    {
-      id: 3,
-      name: "Produk Spesial C",
-      category: "Electronics",
-      price: "Rp 2.500.000",
-      stock: 15,
-      commission: "12%",
-      description: "Teknologi terbaru dengan performa maksimal",
-      salesCount: 5,
-      lastSold: "1 hari yang lalu",
-      status: "active",
-      image: "https://via.placeholder.com/200",
-      tags: ["Limited", "Premium"],
-      startDate: "5 Jun 2023"
-    },
-    {
-      id: 4,
-      name: "Produk Hemat D",
-      category: "Home",
-      price: "Rp 350.000",
-      stock: 42,
-      commission: "8%",
-      description: "Solusi hemat untuk kebutuhan rumah tangga",
-      salesCount: 3,
-      lastSold: "3 hari yang lalu",
-      status: "active",
-      image: "https://via.placeholder.com/200",
-      tags: ["Budget", "Essential"],
-      startDate: "10 Jul 2023"
-    },
-    {
-      id: 5,
-      name: "Produk Eksklusif E",
-      category: "Beauty",
-      price: "Rp 1.200.000",
-      stock: 7,
-      commission: "18%",
-      description: "Produk perawatan premium dengan bahan alami",
-      salesCount: 0,
-      lastSold: "-",
-      status: "pending",
-      image: "https://via.placeholder.com/200",
-      tags: ["New", "Exclusive"],
-      startDate: "25 Agt 2023"
-    },
-  ];
+  // Use centralized data from lib/data/products.ts
+  const sellingProducts: Product[] = getProductsByRole('agent');
 
   const categories = ["all", "Electronics", "Fashion", "Home", "Beauty"];
   const statusFilters = [
@@ -150,16 +61,16 @@ const AgentSellingProducts = () => {
   // Filter products based on search, category, and status
   const filteredProducts = sellingProducts.filter((product) =>
     (selectedCategory === "all" || product.category === selectedCategory) &&
-    (selectedStatus === "all" || product.status === selectedStatus) &&
-    (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-     product.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    (selectedStatus === "all" || (product.isActive ? "active" : "out_of_stock") === selectedStatus) &&
+    (product.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // Function to get status badge style
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
       case 'active':
-        return isDarkMode 
+        return isDarkMode
           ? "bg-green-500/20 text-green-500"
           : "bg-green-100 text-green-700";
       case 'out_of_stock':
@@ -192,7 +103,7 @@ const AgentSellingProducts = () => {
   };
 
   // Handler for view product detail
-  const handleViewProductDetail = (productId: number) => {
+  const handleViewProductDetail = (productId: string) => {
     navigate(`/dashboard/agent/product/${productId}`);
   };
 
@@ -235,7 +146,7 @@ const AgentSellingProducts = () => {
               Kelola produk yang sedang Anda jual saat ini
             </p>
           </div>
-          <Button 
+          <Button
             onClick={handleAddProductToSelling}
             className={cn(
               "bg-blue-600 text-white hover:bg-blue-700"
@@ -248,8 +159,8 @@ const AgentSellingProducts = () => {
 
         <Card className={cn(
           "transition-colors duration-300",
-          isDarkMode 
-            ? "bg-gray-800 border-gray-700" 
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
             : "bg-white border-gray-200"
         )}>
           <CardContent className="p-6">
@@ -263,7 +174,7 @@ const AgentSellingProducts = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={cn(
                     "pl-10 transition-colors duration-300",
-                    isDarkMode 
+                    isDarkMode
                       ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                       : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-500"
                   )}
@@ -325,39 +236,35 @@ const AgentSellingProducts = () => {
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className={cn(
+            <Card key={product.productId} className={cn(
               "overflow-hidden transition-all duration-300",
-              isDarkMode 
-                ? "bg-gray-800 border-gray-700 hover:border-gray-600" 
+              isDarkMode
+                ? "bg-gray-800 border-gray-700 hover:border-gray-600"
                 : "bg-white border-gray-200 hover:border-gray-300"
             )}>
               <div className="relative aspect-[4/3]">
                 <img
-                  src={product.image || getPlaceholderImage()}
-                  alt={product.name}
+                  src={product.imageUrls?.[0] || getPlaceholderImage()}
+                  alt={product.productName}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-0 inset-x-0 p-3 flex justify-between items-start">
                   <div className={cn(
                     "px-2.5 py-1 rounded-full text-xs font-medium",
-                    getStatusBadgeStyle(product.status)
+                    getStatusBadgeStyle(product.isActive ? "active" : "out_of_stock")
                   )}>
-                    {getStatusLabel(product.status)}
+                    {getStatusLabel(product.isActive ? "active" : "out_of_stock")}
                   </div>
                   <div className="flex gap-1">
-                    {product.tags.map((tag, index) => (
+                    {product.features?.slice(0, 2).map((feature, index) => (
                       <span
                         key={index}
                         className={cn(
                           "px-2.5 py-1 text-xs rounded-full font-medium",
-                          tag === "Premium" 
-                            ? "bg-yellow-500/90 text-white"
-                            : tag === "New"
-                            ? "bg-green-500/90 text-white"
-                            : "bg-blue-500/90 text-white"
+                          "bg-blue-500/90 text-white"
                         )}
                       >
-                        {tag}
+                        {feature}
                       </span>
                     ))}
                   </div>
@@ -368,13 +275,13 @@ const AgentSellingProducts = () => {
                   <h3 className={cn(
                     "font-semibold text-lg line-clamp-1",
                     isDarkMode ? "text-white" : "text-gray-900"
-                  )}>{product.name}</h3>
+                  )}>{product.productName}</h3>
                   <p className={cn(
                     "text-sm line-clamp-2 mt-1",
                     isDarkMode ? "text-gray-300" : "text-gray-600"
                   )}>{product.description}</p>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Tag className={cn(
@@ -394,7 +301,11 @@ const AgentSellingProducts = () => {
                     <span className={cn(
                       "text-sm",
                       isDarkMode ? "text-gray-300" : "text-gray-600"
-                    )}>{product.startDate}</span>
+                    )}>{new Date(product.createdAt).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}</span>
                   </div>
                 </div>
 
@@ -403,25 +314,25 @@ const AgentSellingProducts = () => {
                     <p className={cn(
                       "text-lg font-bold",
                       isDarkMode ? "text-white" : "text-gray-900"
-                    )}>{product.price}</p>
+                    )}>Rp {product.basePrice.toLocaleString()}</p>
                     <p className={cn(
                       "text-sm flex items-center",
                       isDarkMode ? "text-green-400" : "text-green-600"
                     )}>
                       <Percent className="h-3.5 w-3.5 mr-1" />
-                      Komisi {product.commission}
+                      Komisi 10%
                     </p>
                   </div>
                   <div className="text-right">
                     <p className={cn(
                       "text-lg font-bold",
                       isDarkMode ? "text-white" : "text-gray-900"
-                    )}>{product.salesCount}</p>
+                    )}>0</p>
                     <p className={cn(
                       "text-sm",
                       isDarkMode ? "text-gray-300" : "text-gray-600"
                     )}>
-                      {product.salesCount > 0 ? "Unit Terjual" : "Belum Terjual"}
+                      Belum Terjual
                     </p>
                   </div>
                 </div>
@@ -434,21 +345,15 @@ const AgentSellingProducts = () => {
                     )}>Stok tersedia</p>
                     <p className={cn(
                       "font-semibold",
-                      product.stock === 0
-                        ? "text-red-500"
-                        : product.stock < 10
-                        ? "text-yellow-500"
-                        : isDarkMode
-                        ? "text-white"
-                        : "text-gray-900"
-                    )}>{product.stock} unit</p>
+                      isDarkMode ? "text-white" : "text-gray-900"
+                    )}>50 unit</p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleViewProductDetail(product.id)}
+                  <Button
+                    variant="outline"
+                    onClick={() => handleViewProductDetail(product.productId)}
                     className={cn(
-                      isDarkMode 
-                        ? "border-gray-600 text-gray-300 hover:bg-gray-700" 
+                      isDarkMode
+                        ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                         : "border-gray-200 hover:bg-gray-100"
                     )}
                   >
@@ -469,8 +374,8 @@ const AgentSellingProducts = () => {
             <Package className="w-12 h-12 mb-3 opacity-30" />
             <h3 className="text-lg font-medium mb-1">Tidak ada produk ditemukan</h3>
             <p className="text-sm max-w-md">Tidak ada produk yang sesuai dengan kriteria pencarian saat ini. Coba ubah filter atau tambahkan produk baru.</p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setSearchQuery("");
                 setSelectedCategory("all");
@@ -478,8 +383,8 @@ const AgentSellingProducts = () => {
               }}
               className={cn(
                 "mt-4",
-                isDarkMode 
-                  ? "border-gray-600 text-gray-300 hover:bg-gray-700" 
+                isDarkMode
+                  ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                   : "border-gray-200 hover:bg-gray-100"
               )}
             >
