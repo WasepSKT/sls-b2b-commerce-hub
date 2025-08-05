@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
-import { getProductsByRole, getInventoryByProductId } from "@/lib/data/products";
+import { getProductsByRole, getInventoryByProductId, Product } from "@/lib/data/products";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RecommendedStoresCarousel from "@/components/RecommendedStoresCarousel";
@@ -47,23 +47,23 @@ const ResellerShopping = () => {
     );
   };
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     console.log('Adding to cart:', product);
   };
 
   const handleViewProduct = (productId: string) => {
     // Scroll to top before navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    navigate(`/product/${productId}`);
+    navigate(`/reseller/product/${productId}`);
   };
 
-  const handleBuyProduct = (product: any) => {
+  const handleBuyProduct = (product: Product) => {
     // Scroll to top before navigation
     window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate('/register', {
       state: {
         message: "Silakan daftar atau login terlebih dahulu untuk melakukan pembelian",
-        returnTo: `/product/${product.id}`
+        returnTo: `/product/${product.productId}`
       }
     });
   };
@@ -223,7 +223,7 @@ const ResellerShopping = () => {
 
                 <CardFooter className="p-4 pt-0">
                   <div className="grid grid-cols-2 gap-2 w-full">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewProduct(product.productId)}>
                       <Eye className="h-4 w-4 mr-2" />
                       Detail
                     </Button>

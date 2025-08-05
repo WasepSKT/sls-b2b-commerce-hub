@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui";
+import ProductCard from "@/components/business/ProductCard";
 import { Badge } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { useTheme } from "@/lib/store/theme";
@@ -212,7 +213,7 @@ const PublicEcommerce = () => {
             "text-lg max-w-2xl mx-auto",
             isDarkMode ? "text-gray-300" : "text-gray-600"
           )}>
-            Platform e-commerce terdepan dengan ribuan produk dari berbagai kategori.
+            Platform e-commerce B2B terdepan dengan ribuan produk dari berbagai kategori.
             Daftar sekarang untuk mulai berbelanja!
           </p>
         </div>
@@ -336,188 +337,29 @@ const PublicEcommerce = () => {
               ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
               : "space-y-4"
           )}>
-            {filteredProducts.map((product) => {
-              const isWishlisted = wishlist.includes(product.productId);
-              const inventory = getInventoryByProductId(product.productId);
-              const stock = inventory?.quantityOnHand || 0;
-
-              return viewMode === "grid" ? (
-                // Grid View
-                <Card key={product.productId} className={cn(
-                  "group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
-                  isDarkMode ? "bg-gray-800 border-gray-700 hover:border-gray-600" : "bg-white border-gray-200 hover:border-gray-300"
-                )}>
-                  <CardHeader className="p-0 relative">
-                    <img
-                      src={product.imageUrls?.[0] || '/placeholder.webp'}
-                      alt={product.productName}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 hover:bg-gray-100/80"
-                      onClick={() => handleToggleWishlist(product.productId)}
-                    >
-                      <Heart className={cn(
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.productId}
+                product={product}
+                onAddToCart={() => handleAddToCart(product)}
+                onBuy={() => handleAddToCart(product)}
+                renderRatingStars={(rating) => {
+                  return [...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={cn(
                         "h-4 w-4",
-                        isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"
-                      )} />
-                    </Button>
-                  </CardHeader>
-
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                        <span className={cn(
-                          "text-xs",
-                          isDarkMode ? "text-gray-300" : "text-gray-600"
-                        )}>
-                          4.5
-                        </span>
-                      </div>
-                      <span className={cn(
-                        "px-2 py-1 rounded-full text-xs font-medium",
-                        stock > 10
-                          ? isDarkMode ? "bg-green-900 text-green-300" : "bg-green-100 text-green-800"
-                          : stock > 0
-                            ? isDarkMode ? "bg-yellow-900 text-yellow-300" : "bg-yellow-100 text-yellow-800"
-                            : isDarkMode ? "bg-red-900 text-red-300" : "bg-red-100 text-red-800"
-                      )}>
-                        {stock > 10 ? "Tersedia" : stock > 0 ? "Terbatas" : "Habis"}
-                      </span>
-                    </div>
-
-                    <CardTitle className={cn(
-                      "text-sm font-semibold mb-2 line-clamp-2",
-                      isDarkMode ? "text-gray-200" : "text-gray-900"
-                    )}>
-                      {product.productName}
-                    </CardTitle>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className={cn(
-                          "text-lg font-bold",
-                          isDarkMode ? "text-white" : "text-gray-900"
-                        )}>
-                          Rp {product.basePrice.toLocaleString()}
-                        </p>
-                      </div>
-                      <p className={cn(
-                        "text-xs",
-                        isDarkMode ? "text-gray-400" : "text-gray-500"
-                      )}>
-                        Stok: {stock}
-                      </p>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="p-4 pt-0">
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewProduct(product.productId)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        Detail
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleAddToCart(product)}
-                        disabled={stock === 0}
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Beli
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ) : (
-                // List View
-                <Card key={product.productId} className={cn(
-                  "transition-all duration-300 hover:shadow-lg",
-                  isDarkMode ? "bg-gray-800 border-gray-700 hover:bg-gray-750" : "bg-white border-gray-200 hover:bg-gray-50"
-                )}>
-                  <div className="flex">
-                    <div className="w-32 h-32 flex-shrink-0">
-                      <img
-                        src={product.imageUrls?.[0] || '/placeholder.webp'}
-                        alt={product.productName}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge variant="outline" className={cn(
-                          isDarkMode ? "border-gray-600 text-gray-300" : "border-gray-300 text-gray-600"
-                        )}>
-                          {product.category}
-                        </Badge>
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-3 w-3 text-yellow-500" />
-                          <span className={cn(
-                            "text-xs",
-                            isDarkMode ? "text-gray-300" : "text-gray-600"
-                          )}>
-                            4.5
-                          </span>
-                        </div>
-                      </div>
-                      <CardTitle className={cn(
-                        "text-lg font-semibold mb-2",
-                        isDarkMode ? "text-white" : "text-gray-900"
-                      )}>
-                        {product.productName}
-                      </CardTitle>
-                      <p className={cn(
-                        "text-sm mb-4",
-                        isDarkMode ? "text-gray-400" : "text-gray-500"
-                      )}>
-                        {product.description}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className={cn(
-                            "text-lg font-bold",
-                            isDarkMode ? "text-white" : "text-gray-900"
-                          )}>
-                            Rp {product.basePrice.toLocaleString()}
-                          </p>
-                          <p className={cn(
-                            "text-xs",
-                            isDarkMode ? "text-gray-400" : "text-gray-500"
-                          )}>
-                            Stok: {stock} unit
-                          </p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewProduct(product.productId)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Detail
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleAddToCart(product)}
-                            disabled={stock === 0}
-                          >
-                            <ShoppingCart className="h-4 w-4 mr-2" />
-                            Beli
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+                        i < Math.floor(rating)
+                          ? "text-yellow-400 fill-current"
+                          : isDarkMode ? "text-gray-600" : "text-gray-300"
+                      )}
+                    />
+                  ));
+                }}
+                onCardClick={() => handleViewProduct(product.productId)}
+                hideDetailButton
+              />
+            ))}
           </div>
         )}
 

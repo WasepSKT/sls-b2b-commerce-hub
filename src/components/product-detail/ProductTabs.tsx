@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
-import { Star, CheckCircle } from "lucide-react";
+import { Star, CheckCircle, Truck, ShieldCheck } from "lucide-react";
 import { Product, Review } from "@/lib/data/products";
 import { PRODUCT_TABS, SHIPPING_INFO, GUARANTEE_INFO } from "@/constants/productDetail";
 
@@ -313,7 +313,9 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
                 isDarkMode ? "bg-gray-800" : "bg-gray-50"
               )}>
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-6 h-6 text-blue-500">🚚</div>
+                  <div className="w-6 h-6 text-blue-500">
+                    <Truck />
+                  </div>
                   <h4 className={cn(
                     "font-semibold",
                     isDarkMode ? "text-white" : "text-gray-900"
@@ -346,7 +348,9 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
                 isDarkMode ? "bg-gray-800" : "bg-gray-50"
               )}>
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-6 h-6 text-green-500">🛡️</div>
+                  <div className="w-6 h-6 text-green-500">
+                    <ShieldCheck />
+                  </div>
                   <h4 className={cn(
                     "font-semibold",
                     isDarkMode ? "text-white" : "text-gray-900"
@@ -380,4 +384,4 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
   );
 };
 
-export default ProductTabs; 
+export default ProductTabs;

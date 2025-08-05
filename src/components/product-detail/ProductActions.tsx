@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
-import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { ShoppingCart, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
 import { Product, Inventory } from "@/lib/data/products";
 
 interface ProductActionsProps {
@@ -90,7 +90,9 @@ const ProductActions: React.FC<ProductActionsProps> = ({
       )}>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center">
-            <div className="w-5 h-5 mr-3 text-green-500">🛡️</div>
+            <div className="w-5 h-5 mr-3 text-green-500">
+              <ShieldCheck />
+            </div>
             <div>
               <div className={cn(
                 "font-medium",
@@ -106,7 +108,9 @@ const ProductActions: React.FC<ProductActionsProps> = ({
             </div>
           </div>
           <div className="flex items-center">
-            <div className="w-5 h-5 mr-3 text-blue-500">🚚</div>
+            <div className="w-5 h-5 mr-3 text-blue-500">
+              <Truck />
+            </div>
             <div>
               <div className={cn(
                 "font-medium",
@@ -127,4 +131,4 @@ const ProductActions: React.FC<ProductActionsProps> = ({
   );
 };
 
-export default ProductActions; 
+export default ProductActions;

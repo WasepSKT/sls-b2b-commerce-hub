@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/store/theme";
 import { Product } from "@/lib/data/products";
+import ProductCard from "@/components/business/ProductCard";
 
 interface SimilarProductsProps {
   similarProducts: Product[];
@@ -41,38 +41,32 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {similarProducts.map((similarProduct) => (
-          <div
+          <ProductCard
             key={similarProduct.productId}
-            className={cn(
-              "group cursor-pointer rounded-xl overflow-hidden border transition-all hover:shadow-lg",
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-            )}
-            onClick={() => onProductClick(similarProduct.productId)}
-          >
-            <div className="aspect-square overflow-hidden">
-              <img
-                src={similarProduct.imageUrls?.[0] || '/placeholder.webp'}
-                alt={similarProduct.productName}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className={cn(
-                "font-medium text-sm mb-2 line-clamp-2",
-                isDarkMode ? "text-white" : "text-gray-900"
-              )}>
-                {similarProduct.productName}
-              </h3>
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-blue-600">
-                  Rp {similarProduct.basePrice.toLocaleString()}
+            product={similarProduct}
+            onAddToCart={() => { }}
+            onBuy={() => onProductClick(similarProduct.productId)}
+            renderRatingStars={(rating) => {
+              return [...Array(5)].map((_, i) => (
+                <span key={i}>
+                  <svg
+                    className={cn(
+                      "h-4 w-4 inline",
+                      i < Math.floor(rating)
+                        ? "text-yellow-400 fill-current"
+                        : isDarkMode ? "text-gray-600" : "text-gray-300"
+                    )}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <polygon points="9.9,1.1 7.6,6.6 1.6,7.6 6,11.9 4.9,17.9 9.9,14.9 14.9,17.9 13.8,11.9 18.2,7.6 12.2,6.6 " />
+                  </svg>
                 </span>
-                <Badge variant="outline" className="text-xs">
-                  {similarProduct.category}
-                </Badge>
-              </div>
-            </div>
-          </div>
+              ));
+            }}
+            onCardClick={() => onProductClick(similarProduct.productId)}
+            hideDetailButton
+          />
         ))}
       </div>
     </div>

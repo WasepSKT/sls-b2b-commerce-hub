@@ -17,6 +17,9 @@ import ProductNotFound from "@/components/product-detail/ProductNotFound";
 
 const ResellerProductDetail = () => {
   const { productId } = useParams();
+  // Debug log untuk melihat productId yang diterima
+  console.log('Current productId from URL:', productId);
+
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
   const [isWishlisted, setIsWishlisted] = useState(false);

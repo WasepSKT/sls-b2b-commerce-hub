@@ -22,8 +22,15 @@ export interface Product {
   isActive: boolean; // BOOLEAN, default: true
   createdAt: string; // TIMESTAMP
   updatedAt: string; // TIMESTAMP
+  sold: number; // jumlah produk yang terjual
+  sellerFavicon?: string; // URL favicon agen/toko
+  sellerName?: string; // Nama agen/toko
+  sellerAddress?: string; // Alamat agen/toko
+  sellerRating?: number; // Rating agen/toko
 }
 
+// Review Interface
+// Review Interface
 // Review Interface
 export interface Review {
   reviewId: string;
@@ -78,6 +85,7 @@ export interface ProductCategory {
   description: string;
   parentId?: string;
 }
+// Review Interface
 
 // Categories
 export const categories: ProductCategory[] = [
@@ -408,7 +416,8 @@ export const principalProducts: Product[] = [
     ],
     isActive: true,
     createdAt: "2024-01-15T00:00:00Z",
-    updatedAt: "2024-01-15T00:00:00Z"
+    updatedAt: "2024-01-15T00:00:00Z",
+    sold: 150
   },
   {
     productId: "prod-002",
@@ -451,7 +460,8 @@ export const principalProducts: Product[] = [
     ],
     isActive: true,
     createdAt: "2024-01-10T00:00:00Z",
-    updatedAt: "2024-01-10T00:00:00Z"
+    updatedAt: "2024-01-10T00:00:00Z",
+    sold: 200
   },
   {
     productId: "prod-003",
@@ -474,7 +484,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-05T00:00:00Z",
-    updatedAt: "2024-01-05T00:00:00Z"
+    updatedAt: "2024-01-05T00:00:00Z",
+    sold: 50
   },
   {
     productId: "prod-004",
@@ -497,7 +508,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-20T00:00:00Z",
-    updatedAt: "2024-01-20T00:00:00Z"
+    updatedAt: "2024-01-20T00:00:00Z",
+    sold: 10
   },
   {
     productId: "prod-005",
@@ -520,7 +532,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-12T00:00:00Z",
-    updatedAt: "2024-01-12T00:00:00Z"
+    updatedAt: "2024-01-12T00:00:00Z",
+    sold: 75
   },
   {
     productId: "prod-006",
@@ -559,7 +572,8 @@ export const principalProducts: Product[] = [
     ],
     isActive: true,
     createdAt: "2024-01-08T00:00:00Z",
-    updatedAt: "2024-01-08T00:00:00Z"
+    updatedAt: "2024-01-08T00:00:00Z",
+    sold: 30
   },
   {
     productId: "prod-007",
@@ -582,7 +596,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-18T00:00:00Z",
-    updatedAt: "2024-01-18T00:00:00Z"
+    updatedAt: "2024-01-18T00:00:00Z",
+    sold: 20
   },
   {
     productId: "prod-008",
@@ -605,7 +620,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-14T00:00:00Z",
-    updatedAt: "2024-01-14T00:00:00Z"
+    updatedAt: "2024-01-14T00:00:00Z",
+    sold: 100
   },
   {
     productId: "prod-009",
@@ -628,7 +644,8 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-16T00:00:00Z",
-    updatedAt: "2024-01-16T00:00:00Z"
+    updatedAt: "2024-01-16T00:00:00Z",
+    sold: 300
   },
   {
     productId: "prod-010",
@@ -651,33 +668,40 @@ export const principalProducts: Product[] = [
     },
     isActive: true,
     createdAt: "2024-01-22T00:00:00Z",
-    updatedAt: "2024-01-22T00:00:00Z"
+    updatedAt: "2024-01-22T00:00:00Z",
+    sold: 500
   }
 ];
 
-// Role-based Products (defined after principalProducts to avoid circular dependency)
+// Role-based Products dengan hierarki yang benar
+// Principal -> Distributor -> Agent -> Reseller -> Customer
+
+// Distributor mendapat produk dari Principal dengan markup 15%
 export const distributorProducts: Product[] = principalProducts.map(product => ({
   ...product,
-  basePrice: Math.round(product.basePrice * 1.15), // 15% markup
+  basePrice: Math.round(product.basePrice * 1.15), // 15% markup dari harga principal
   productId: `dist-${product.productId}`,
 }));
 
-export const agentProducts: Product[] = principalProducts.map(product => ({
+// Agent mendapat produk dari Distributor dengan markup 10%
+export const agentProducts: Product[] = distributorProducts.map(product => ({
   ...product,
-  basePrice: Math.round(product.basePrice * 1.25), // 25% markup
-  productId: `agent-${product.productId}`,
+  basePrice: Math.round(product.basePrice * 1.10), // 10% markup dari harga distributor
+  productId: `agent-${product.productId.replace('dist-', '')}`,
 }));
 
-export const resellerProducts: Product[] = principalProducts.map(product => ({
+// Reseller mendapat produk dari Agent dengan markup 10%
+export const resellerProducts: Product[] = agentProducts.map(product => ({
   ...product,
-  basePrice: Math.round(product.basePrice * 1.35), // 35% markup
-  productId: `reseller-${product.productId}`,
+  basePrice: Math.round(product.basePrice * 1.10), // 10% markup dari harga agent
+  productId: `reseller-${product.productId.replace('agent-', '')}`,
 }));
 
-export const customerProducts: Product[] = principalProducts.map(product => ({
+// Customer mendapat produk dari Reseller dengan markup 15%
+export const customerProducts: Product[] = resellerProducts.map(product => ({
   ...product,
-  basePrice: Math.round(product.basePrice * 1.50), // 50% markup
-  productId: `customer-${product.productId}`,
+  basePrice: Math.round(product.basePrice * 1.15), // 15% markup dari harga reseller
+  productId: `customer-${product.productId.replace('reseller-', '')}`,
 }));
 
 // All products array - defined after all role-based products
@@ -686,63 +710,99 @@ export const allProducts: Product[] = [
   ...agentProducts,
   ...distributorProducts,
   ...resellerProducts,
-  ...customerProducts,
+  ...customerProducts
 ];
 
-// All helper functions moved to end to avoid circular dependency
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+// Get product by ID with role-based pricing
 export const getProductById = (productId: string) => {
-  console.log('=== DEBUG getProductById ===');
-  console.log('Called with productId:', productId);
-  console.log('principalProducts length:', principalProducts?.length);
-  console.log('principalProducts first item:', principalProducts?.[0]?.productId);
-  console.log('agentProducts length:', agentProducts?.length);
-  console.log('allProducts length:', allProducts?.length);
-  
-  // Check if arrays are defined
-  if (!principalProducts) {
-    console.error('principalProducts is undefined!');
+  if (!productId) {
+    console.log('Product ID is undefined');
     return undefined;
   }
   
-  if (!agentProducts) {
-    console.error('agentProducts is undefined!');
-    return undefined;
-  }
-  
-  // First try to find in principalProducts
-  console.log('Searching in principalProducts...');
-  let result = principalProducts.find(product => product.productId === productId);
-  
-  if (result) {
-    console.log('✅ Found in principalProducts:', result.productName);
-    return result;
-  }
-  
-  console.log('❌ Not found in principalProducts, searching in role-based products...');
-  
-  // If not found, try role-based products
-  const roleProducts = [
-    ...agentProducts,
-    ...distributorProducts,
-    ...resellerProducts,
-    ...customerProducts
+  console.log('Looking for product ID:', productId);
+
+  // Struktur hierarki dan markup
+  const hierarchy = [
+    { role: 'customer', products: customerProducts, source: 'reseller', markup: 1.15 },
+    { role: 'reseller', products: resellerProducts, source: 'agent', markup: 1.10 },
+    { role: 'agent', products: agentProducts, source: 'distributor', markup: 1.10 },
+    { role: 'distributor', products: distributorProducts, source: 'principal', markup: 1.15 },
+    { role: 'principal', products: principalProducts, source: null, markup: 1.0 }
   ];
-  
-  console.log('roleProducts length:', roleProducts.length);
-  console.log('roleProducts first item:', roleProducts[0]?.productId);
-  
-  result = roleProducts.find(product => product.productId === productId);
-  
-  if (result) {
-    console.log('✅ Found in role-based products:', result.productName);
-    return result;
+
+  // Coba temukan produk yang tepat di setiap level hierarki
+  for (const level of hierarchy) {
+    console.log(`Searching in ${level.role} products for:`, productId);
+    const exactProduct = level.products.find(p => p.productId === productId);
+    if (exactProduct) {
+      console.log('Found exact product in', level.role, ':', exactProduct.productName);
+      return exactProduct;
+    }
   }
+
+  // Function to strip role prefix if present
+  const stripRolePrefix = (id: string) => {
+    const prefixes = ['dist-', 'agent-', 'reseller-', 'customer-'];
+    for (const prefix of prefixes) {
+      if (id.startsWith(prefix)) {
+        return id.slice(prefix.length);
+      }
+    }
+    return id;
+  };
+
+  // Get the base product ID without role prefix
+  const baseProductId = stripRolePrefix(productId);
   
-  console.log('❌ Product not found in any array');
-  console.log('Available productIds in principalProducts:', principalProducts.map(p => p.productId));
-  console.log('Available productIds in roleProducts:', roleProducts.map(p => p.productId));
-  
-  return undefined;
+  // Try to find the base product
+  const baseProduct = principalProducts.find(p => p.productId === baseProductId);
+  if (!baseProduct) {
+    console.log('Base product not found for ID:', productId);
+    return undefined;
+  }
+
+  let result: Product;
+
+  // Determine the role from the original productId and apply markup
+  if (productId.startsWith('dist-')) {
+    result = { 
+      ...baseProduct,
+      basePrice: Math.round(baseProduct.basePrice * 1.15),
+      productId: productId
+    };
+  } else if (productId.startsWith('agent-')) {
+    result = { 
+      ...baseProduct,
+      basePrice: Math.round(baseProduct.basePrice * 1.25),
+      productId: productId
+    };
+  } else if (productId.startsWith('reseller-')) {
+    result = { 
+      ...baseProduct,
+      basePrice: Math.round(baseProduct.basePrice * 1.35),
+      productId: productId
+    };
+  } else if (productId.startsWith('customer-')) {
+    result = { 
+      ...baseProduct,
+      basePrice: Math.round(baseProduct.basePrice * 1.50),
+      productId: productId
+    };
+  } else {
+    result = { ...baseProduct };
+  }
+
+  console.log('Found and transformed product:', {
+    id: result.productId,
+    name: result.productName,
+    price: result.basePrice
+  });
+  return result;
 };
 
 export const getInventoryByProductId = (productId: string) => {
@@ -788,20 +848,46 @@ export const getReviewCountByProductId = (productId: string) => {
 
 // Recommendation helper functions
 export const getRecommendedProducts = (type: 'featured' | 'trending' | 'similar' | 'admin_pick' | 'best_seller' = 'featured', limit: number = 6) => {
+  console.log('Getting recommended products of type:', type);
+
+  // Get active recommendations of specified type, sorted by priority
   const recommendations = mockProductRecommendations
     .filter(rec => rec.recommendationType === type && rec.isActive)
     .sort((a, b) => b.priority - a.priority)
     .slice(0, limit);
 
-  return recommendations.map(rec => {
-    const product = principalProducts.find(p => p.productId === rec.productId);
-    return {
-      ...product,
+  // Map recommendations to full product details
+  const recommendedProducts = recommendations.map(rec => {
+    // Find the base product
+    const baseProduct = principalProducts.find(p => p.productId === rec.productId);
+    if (!baseProduct) {
+      console.log(`Product not found for recommendation:`, rec.productId);
+      return null;
+    }
+
+    // Combine product details with recommendation metadata
+    const enrichedProduct = {
+      ...baseProduct,
       recommendationType: rec.recommendationType,
       priority: rec.priority,
-      algorithm: rec.algorithm
+      algorithm: rec.algorithm,
+      inventory: getInventoryByProductId(rec.productId),
+      rating: getAverageRatingByProductId(rec.productId),
+      reviewCount: getReviewCountByProductId(rec.productId)
     };
+
+    console.log(`Enriched recommended product:`, {
+      id: enrichedProduct.productId,
+      name: enrichedProduct.productName,
+      type: enrichedProduct.recommendationType,
+      rating: enrichedProduct.rating
+    });
+
+    return enrichedProduct;
   }).filter(Boolean);
+
+  console.log(`Found ${recommendedProducts.length} recommended products of type ${type}`);
+  return recommendedProducts;
 };
 
 export const getSimilarProducts = (currentProductId: string, limit: number = 4) => {
@@ -837,14 +923,40 @@ export const getProductsByRole = (role: string) => {
   }
 };
 
-// Debug function to verify data
-export const debugProductData = () => {
-  console.log('Debug Product Data:');
-  console.log('principalProducts length:', principalProducts.length);
-  console.log('allProducts length:', allProducts.length);
-  console.log('prod-001 in principalProducts:', principalProducts.find(p => p.productId === 'prod-001')?.productName);
-  console.log('prod-006 in principalProducts:', principalProducts.find(p => p.productId === 'prod-006')?.productName);
-  console.log('prod-001 in allProducts:', allProducts.find(p => p.productId === 'prod-001')?.productName);
-  console.log('prod-006 in allProducts:', allProducts.find(p => p.productId === 'prod-006')?.productName);
-};
+// Mock Products Data
+export const mockProducts: Product[] = [
+  {
+    productId: "prod-001",
+    principalId: "principal-001",
+    productName: "Laptop Gaming XYZ",
+    description: "Laptop gaming dengan performa tinggi dan desain modern.",
+    sku: "LAP-GAM-XYZ",
+    basePrice: 15000000,
+    imageUrls: [
+      "https://images.unsplash.com/photo-1603302576837-37561b2e2302?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    ],
+    category: "Elektronik",
+    weightGrams: 2500,
+    dimensionsCm: {
+      length: 35,
+      width: 25,
+      height: 2.5
+    },
+    specifications: [
+      { label: "Processor", value: "Intel Core i7" },
+      { label: "RAM", value: "16GB" },
+      { label: "Storage", value: "512GB SSD" }
+    ],
+    sellerFavicon: "https://via.placeholder.com/40",
+    sellerName: "Toko Elektronik Jaya",
+    sellerAddress: "Jl. Merdeka No. 45, Bandung",
+    sellerRating: 4.5,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    sold: 120
+  }
+];
+
+
 

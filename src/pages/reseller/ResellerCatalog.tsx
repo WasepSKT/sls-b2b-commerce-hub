@@ -8,6 +8,7 @@ import { useTheme } from "@/lib/store/theme";
 import { cn } from "@/lib/utils";
 import { getProductsByRole, getInventoryByProductId, Product } from "@/lib/data/products";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Plus,
   Check,
@@ -25,7 +26,6 @@ import {
   Grid3X3,
   List
 } from "lucide-react";
-import ProductDetail from "@/components/ProductDetail";
 
 // Mock data for agents with commission rates
 const agents = [
@@ -61,8 +61,7 @@ const agents = [
 const ResellerCatalog = () => {
   const { isDarkMode } = useTheme();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,12 +179,11 @@ const ResellerCatalog = () => {
   };
 
   const handleViewProductDetail = (product: Product) => {
-    setSelectedProductDetail(product);
-    setIsDetailModalOpen(true);
+    navigate(`/reseller/product/${product.productId}`);
   };
 
   const handleShareProduct = (product: Product) => {
-    const shareUrl = `${window.location.origin}/product/${product.productId}`;
+    const shareUrl = `${window.location.origin}/reseller/product/${product.productId}`;
     navigator.clipboard.writeText(shareUrl);
     console.log('Product link copied to clipboard:', shareUrl);
   };
@@ -883,18 +881,7 @@ const ResellerCatalog = () => {
         )}
       </div>
 
-      {/* Product Detail Modal */}
-      <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-        {selectedProductDetail && (
-          <ProductDetail
-            product={selectedProductDetail}
-            onClose={() => setIsDetailModalOpen(false)}
-            getAgentForProduct={getAgentForProduct}
-            getInventoryByProductId={getInventoryByProductId}
-            handleShareProduct={handleShareProduct}
-          />
-        )}
-      </Dialog>
+      {/* Product Detail Modal removed: now using product detail page navigation */}
     </div>
   );
 };

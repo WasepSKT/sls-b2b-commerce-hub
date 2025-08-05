@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import PublicEcommerce from "@/pages/PublicEcommerce";
 import Login from "@/pages/Login";
@@ -18,9 +19,22 @@ import AdminNewsCreate from "@/pages/admin/AdminNewsCreate";
 import AdminWhatsapp from "@/pages/admin/AdminWhatsapp";
 import AdminWhatsappBlastCreate from "@/pages/admin/AdminWhatsappBlastCreate";
 import AdminNotifications from "@/pages/admin/AdminNotifications";
+import ResellerProductDetail from "@/pages/reseller/ResellerProductDetail";
+
+// Route config
+const routes = createBrowserRouter([
+  {
+    path: "/",
+    element: <About />,
+  },
+  {
+    path: "/dashboard/reseller/product/:productId",
+    element: <ResellerProductDetail />,
+  }
+]);
 import PrincipalDashboard from "@/pages/principal/PrincipalDashboard";
 import PrincipalProducts from "@/pages/principal/PrincipalProducts";
-import ProductDetail from "@/pages/principal/ProductDetail";
+import PublicProductDetail from "@/pages/PublicProductDetail";
 import PrincipalSettings from "@/pages/principal/PrincipalSettings";
 import PrincipalAgents from "@/pages/principal/PrincipalAgents";
 import PrincipalCustomers from "@/pages/principal/PrincipalCustomers";
@@ -29,7 +43,6 @@ import PrincipalReports from "@/pages/principal/PrincipalReports";
 import AgentDashboard from "@/pages/agent/AgentDashboard";
 import CustomerDashboard from "@/pages/customer/CustomerDashboard";
 import { PrivateRoute } from "@/components/PrivateRoute";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 import AdminWhatsappTemplateCreate from "@/pages/admin/AdminWhatsappTemplateCreate";
 import AdminNewsCampaignCreate from "@/pages/admin/AdminNewsCampaignCreate";
 import AgentCatalog from "@/pages/agent/AgentCatalog";
@@ -69,6 +82,7 @@ import ResellerCommissionReport from "@/pages/reseller/ResellerCommissionReport"
 import ResellerSettings from "@/pages/reseller/ResellerSettings";
 import AgentDirectory from "@/pages/reseller/AgentDirectory";
 import ResellerShopping from "@/pages/reseller/ResellerShopping";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const router = createBrowserRouter([
   {
@@ -78,7 +92,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/product/:productId",
-    element: <ProductDetail />,
+    element: <PublicProductDetail />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -246,7 +260,6 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <PrincipalDashboard /> },
       { path: "products", element: <PrincipalProducts /> },
-      { path: "products/:productId", element: <ProductDetail /> },
       { path: "agents", element: <PrincipalAgents /> },
       { path: "customers", element: <PrincipalCustomers /> },
       { path: "orders", element: <PrincipalOrders /> },
